@@ -808,14 +808,30 @@ body.dark .bnav .bn.on{color:var(--gold);}
 
 </style>
 <style>
-body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.viewer [onclick^="addPayment("],body.viewer [onclick^="deletePayment("],body.viewer [onclick^="deleteExpense("],body.viewer [onclick^="addExpense("],body.viewer [onclick^="addCustomRole("],body.viewer [onclick^="removeRole("],body.viewer [onclick^="deleteCustomRole("],body.viewer [onclick^="assignRole("],body.viewer [onclick^="saveSettings("],body.viewer [onclick^="saveRecovery("],body.viewer [onclick^="changePass("],body.viewer [onclick^="clearLogo("],body.viewer [onclick^="pfSave("],body.viewer [onclick^="pfPay("],body.viewer [onclick^="pfEditPay("],body.viewer [onclick^="pfDelPay("],body.viewer [onclick^="pfDelDoc("],body.viewer [onclick^="goAddMember("],body.viewer .wr,body.viewer .bn.fab,body.viewer input[type=file],body.viewer [onclick*="importFile"]{display:none!important}
+body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.viewer [onclick^="addPayment("],body.viewer [onclick^="deletePayment("],body.viewer [onclick^="deleteExpense("],body.viewer [onclick^="addExpense("],body.viewer [onclick^="addCustomRole("],body.viewer [onclick^="removeRole("],body.viewer [onclick^="deleteCustomRole("],body.viewer [onclick^="assignRole("],body.viewer [onclick^="saveSettings("],body.viewer [onclick^="saveRecovery("],body.viewer [onclick^="saveRecoveryEmail("],body.viewer [onclick^="changePass("],body.viewer [onclick^="clearLogo("],body.viewer [onclick^="pfSave("],body.viewer [onclick^="pfPay("],body.viewer [onclick^="pfEditPay("],body.viewer [onclick^="pfDelPay("],body.viewer [onclick^="pfDelDoc("],body.viewer [onclick^="goAddMember("],body.viewer .wr,body.viewer .bn.fab,body.viewer input[type=file],body.viewer [onclick*="importFile"]{display:none!important}
 </style>
 <link rel="manifest" href="manifest.json">
 <meta name="theme-color" content="#151d44">
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icon-192.png">
-<style>[onclick^="showForgot("]{display:none!important}</style>
+<style>
+.lg-loader{position:fixed;inset:0;z-index:500;display:none;flex-direction:column;align-items:center;justify-content:center;gap:20px;background:linear-gradient(165deg,#0b0e24,#151d44 55%,#1f2a5c)}
+.lg-loader.show{display:flex;animation:slideUp .25s ease}
+.lg-spin{width:64px;height:64px;border-radius:50%;border:4px solid rgba(241,217,143,.2);border-top-color:#f1d98f;border-right-color:#c9a24a;animation:lgSpin .9s linear infinite}
+.lg-ltxt{color:#f1d98f;font-size:14px;font-weight:600;letter-spacing:.5px}
+.lg-ltxt i{font-style:normal;animation:lgDot 1.2s infinite}
+.lg-ltxt i:nth-child(2){animation-delay:.2s}.lg-ltxt i:nth-child(3){animation-delay:.4s}
+@keyframes lgSpin{to{transform:rotate(360deg)}}
+@keyframes lgDot{0%,80%,100%{opacity:.2}40%{opacity:1}}
+#loginBox .lg-go{display:flex;align-items:center;justify-content:center;gap:8px}
+#loginBox .lg-go.loading{opacity:.92;pointer-events:none}
+.lg-bspin{width:18px;height:18px;border-radius:50%;border:3px solid rgba(36,26,4,.25);border-top-color:#241a04;animation:lgSpin .8s linear infinite;flex:0 0 18px}
+#loginBox .lg-go i{font-style:normal;margin-left:-6px;animation:lgDot 1.2s infinite}
+#loginBox .lg-go i:nth-of-type(2){animation-delay:.2s}#loginBox .lg-go i:nth-of-type(3){animation-delay:.4s}
+#loginBox .lg-qa{position:relative;z-index:1;width:100%;max-width:340px;margin:14px 0 0;padding:14px;border-radius:18px;font-size:14px;background:rgba(255,255,255,.06);color:#f1d98f;border:1px solid rgba(241,217,143,.45);box-shadow:none}
+#loginBox .lg-qa:hover{background:rgba(241,217,143,.12)}
+</style>
 </head>
 <body>
 
@@ -833,6 +849,7 @@ body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.
   <button class="lg-go" onclick="login()">লগইন করুন →</button>
   <p class="link-btn" onclick="showForgot()">পাসওয়ার্ড ভুলে গেছেন?</p>
   <div class="lg-note">🔐 আপনার ডাটা শুধু এই ডিভাইসে সুরক্ষিত</div>
+  <div class="lg-loader" id="lgLoader"><div class="lg-spin"></div><div class="lg-ltxt">লগইন হচ্ছে<i>.</i><i>.</i><i>.</i></div></div>
 </div>
 
 <!-- মূল অ্যাপ -->
@@ -1087,21 +1104,13 @@ body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.
       <input type="password" id="cpNew2" placeholder="নতুন পাসওয়ার্ড আবার দিন">
       <button class="green" onclick="changePass()">পাসওয়ার্ড বদলান</button>
     </div>
-    <div class="card wr" style="display:none">
-      <h2>🛟 পাসওয়ার্ড রিকভারি</h2>
-      <p class="muted" style="margin-bottom:8px">পাসওয়ার্ড ভুলে গেলে এই প্রশ্নের উত্তর দিয়ে নতুন পাসওয়ার্ড দেওয়া যাবে।</p>
-      <input type="password" id="rqCur" placeholder="বর্তমান পাসওয়ার্ড">
-      <select id="rqSel" onchange="document.getElementById('rqCustom').classList.toggle('hidden', this.value !== '__custom')">
-        <option value="আপনার প্রথম স্কুলের নাম কী?">আপনার প্রথম স্কুলের নাম কী?</option>
-        <option value="আপনার মায়ের নাম কী?">আপনার মায়ের নাম কী?</option>
-        <option value="আপনার ছোটবেলার প্রিয় বন্ধুর নাম কী?">আপনার ছোটবেলার প্রিয় বন্ধুর নাম কী?</option>
-        <option value="আপনার জন্মস্থান কোথায়?">আপনার জন্মস্থান কোথায়?</option>
-        <option value="__custom">নিজের প্রশ্ন লিখব</option>
-      </select>
-      <input type="text" id="rqCustom" class="hidden" placeholder="আপনার নিজের প্রশ্ন">
-      <input type="text" id="rqAns" placeholder="উত্তর">
-      <button class="green" onclick="saveRecovery()">রিকভারি সেভ করুন</button>
-      <p class="muted" id="rqStatus"></p>
+        <div class="card wr">
+      <h2>📧 রিকভারি ইমেইল</h2>
+      <p class="muted" style="margin-bottom:8px;line-height:1.6">পাসওয়ার্ড ভুলে গেলে এই ইমেইলে রিসেট লিংক যাবে। ইমেইল দিলে একটি ভেরিফিকেশন লিংক যাবে — লিংকে ক্লিক করলে সেট হবে।</p>
+      <input type="password" id="reOld" placeholder="বর্তমান পাসওয়ার্ড">
+      <input type="email" id="reMail" placeholder="আপনার আসল ইমেইল">
+      <button class="green" onclick="saveRecoveryEmail()">ভেরিফিকেশন লিংক পাঠান</button>
+      <p class="muted" id="reStatus"></p>
     </div>
     <div class="card">
       <h2>🚪 অ্যাকাউন্ট</h2>
@@ -1180,23 +1189,41 @@ function fbStart() {
       first = false;
       if (!v && FB_ADMIN) FB_KEYS.forEach(k => { const x = localStorage.getItem(k); if (x !== null) fdb.ref('club/' + k).set(x); });
       else if (v) fbApply(v);
+      hideLoginLoader();
       document.getElementById('loginBox').classList.add('hidden');
       document.getElementById('app').classList.remove('hidden');
       init();
     } else if (v && fbApply(v)) { try { loadSettings(); renderAll(); } catch (e) {} }
-  }, err => { toast('❌ ডাটা পড়া যায়নি (' + (err && err.code) + ')'); });
+  }, err => { hideLoginLoader(); toast('❌ ডাটা পড়া যায়নি (' + (err && err.code) + ')'); });
+}
+function showLoginLoader() {
+  const b = document.querySelector('#loginBox .lg-go'); if (!b) return;
+  if (!b.dataset.t) b.dataset.t = b.innerHTML;
+  b.innerHTML = '<span class="lg-bspin"></span>লগইন হচ্ছে<i>.</i><i>.</i><i>.</i>';
+  b.classList.add('loading'); b.disabled = true;
+}
+function hideLoginLoader() {
+  const b = document.querySelector('#loginBox .lg-go'); if (!b) return;
+  if (b.dataset.t) b.innerHTML = b.dataset.t;
+  b.classList.remove('loading'); b.disabled = false;
 }
 function failLogin() {
+  hideLoginLoader();
   if (!registerFail()) toast('❌ ভুল পাসওয়ার্ড!');
   const b = document.getElementById('loginBox'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
 }
 async function fbLogin(p) {
   const btn = document.querySelector('#loginBox .lg-go'); if (btn) btn.disabled = true;
+  showLoginLoader();
   const pw = p + '#bk', bad = ['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-login-credentials','auth/invalid-email'];
   try {
     let role = '', ok = false;
-    for (const r of ['admin', 'viewer']) {
-      try { await auth.signInWithEmailAndPassword(r + '@bhatkuri.app', pw); role = r; ok = true; break; }
+    const rm = lsGet('bk_remail');
+    const tries = [['admin', 'admin@bhatkuri.app', pw]];
+    if (rm) tries.push(['admin', rm, pw], ['admin', rm, p]);
+    tries.push(['viewer', 'viewer@bhatkuri.app', pw]);
+    for (const [r, em, pass] of tries) {
+      try { await auth.signInWithEmailAndPassword(em, pass); role = r; ok = true; break; }
       catch (e) { if (!bad.includes(e.code)) throw e; }
     }
     if (!ok) return failLogin();
@@ -1204,7 +1231,8 @@ async function fbLogin(p) {
     if (role === 'viewer') enterViewer(); else FB_ADMIN = true;
     fbStart();
   } catch (e) {
-    toast(e.code === 'auth/network-request-failed' ? '❌ ইন্টারনেট সংযোগ নেই' : '❌ লগইন সমস্যা: ' + (e.code || e.message));
+    hideLoginLoader();
+    toast(e.code === 'auth/network-request-failed' ? '❌ Firebase-এ পৌঁছানো যাচ্ছে না (নেট/VPN/ব্লক) — আবার চেষ্টা করুন' : '❌ লগইন সমস্যা: ' + (e.code || e.message));
   } finally { if (btn) btn.disabled = false; }
 }
 </script>
@@ -1420,7 +1448,8 @@ function login() {
   if (left) return toast('⏳ ' + bn(Math.ceil(left / 1000)) + ' সেকেন্ড পরে চেষ্টা করুন');
   const p = document.getElementById('pin').value;
   if (!p) return;
-  if (!auth) return toast('❌ ইন্টারনেট সংযোগ নেই বা Firebase লোড হয়নি');
+  if (!auth) return toast('❌ Firebase লোড হয়নি (gstatic.com ব্লক বা নেট সমস্যা) — পেজ রিফ্রেশ করুন');
+  showLoginLoader();
   fbLogin(p);
 }
 // ===== ভিউয়ার (শুধু দেখা) মোড =====
@@ -1454,6 +1483,7 @@ function vpStatus() {
   if (e) e.textContent = lsGet('bk_vpass') ? '✅ ভিউয়ার পাসওয়ার্ড চালু আছে' : '⚪ এখনো সেট করা নেই';
 }
 document.addEventListener('DOMContentLoaded', vpStatus);
+setInterval(function(){try{reStatus();}catch(e){}},2000);
 
 function logout() { try { auth.signOut(); } catch (e) {} setTimeout(() => location.reload(), 150); }
 
@@ -2466,6 +2496,7 @@ function changePass() {
   if (n !== n2) return toast('❌ দুটি পাসওয়ার্ড মেলেনি');
   const u = auth.currentUser;
   u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, o + '#bk'))
+    .catch(() => u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, o)))
     .then(() => u.updatePassword(n + '#bk'))
     .then(() => { ['cpOld','cpNew','cpNew2'].forEach(id => document.getElementById(id).value = ''); toast('✅ পাসওয়ার্ড বদলে গেছে'); })
     .catch(() => toast('❌ বর্তমান পাসওয়ার্ড ভুল বা ইন্টারনেট নেই'));
@@ -2474,43 +2505,51 @@ function changePass() {
 function updateRecoveryStatus() {
   const el = document.getElementById('rqStatus');
   if (!el) return;
-  el.textContent = lsGet('bk_ra')
+  el.textContent = lsGet('bk_rc')
     ? '✅ রিকভারি প্রশ্ন সেট আছে: ' + (lsGet('bk_rq') || '')
     : '⚠️ এখনো রিকভারি প্রশ্ন সেট করা নেই';
 }
-function saveRecovery() {
-  if (!checkPass(document.getElementById('rqCur').value)) return toast('❌ বর্তমান পাসওয়ার্ড ভুল');
-  let q = document.getElementById('rqSel').value;
-  if (q === '__custom') q = document.getElementById('rqCustom').value.trim();
-  const a = normAns(document.getElementById('rqAns').value);
-  if (!q) return toast('প্রশ্ন লিখুন');
-  if (a.length < 2) return toast('উত্তর লিখুন');
-  lsSet('bk_rq', q);
-  lsSet('bk_ra', hp('ans|' + a));
-  document.getElementById('rqCur').value = '';
-  document.getElementById('rqAns').value = '';
-  updateRecoveryStatus();
-  toast('✅ রিকভারি সেভ হয়েছে');
-}
 function showForgot() {
-  const has = !!lsGet('bk_ra');
-  const inner = has ? `
-    <h3>🛟 পাসওয়ার্ড রিকভারি</h3>
-    <p class="muted" style="margin-bottom:10px">প্রশ্ন: <strong>${esc(lsGet('bk_rq') || '')}</strong></p>
-    <input type="text" id="fgAns" placeholder="আপনার উত্তর">
-    <input type="password" id="fgNew" placeholder="নতুন পাসওয়ার্ড (কমপক্ষে ৪ অক্ষর)">
-    <input type="password" id="fgNew2" placeholder="নতুন পাসওয়ার্ড আবার দিন">
-    <button class="green" onclick="resetByAnswer()">পাসওয়ার্ড রিসেট করুন</button>
-    <button class="ghost" onclick="closeModal()">বাতিল</button>` : `
-    <h3>🛟 পাসওয়ার্ড রিকভারি</h3>
-    <p class="muted" style="margin-bottom:10px;line-height:1.7">
-      এই ডিভাইসে রিকভারি প্রশ্ন সেট করা নেই, তাই পাসওয়ার্ড রিসেট করা যাচ্ছে না।<br>
-      • আগে পাসওয়ার্ড না বদলালে ডিফল্ট পাসওয়ার্ডটি চলবে।<br>
-      • না হলে ব্রাউজারের এই সাইটের ডাটা মুছে নতুন করে শুরু করতে হবে (ডাটা চলে যাবে)। আগে নেওয়া JSON ব্যাকআপ থাকলে সেটা ইমপোর্ট করে ডাটা ফেরত আনা যাবে।
-    </p>
-    <button onclick="closeModal()">ঠিক আছে</button>`;
+  const em = lsGet('bk_remail') || '';
   document.getElementById('modalContainer').innerHTML =
-    `<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()">${inner}</div></div>`;
+    `<div class="modal-bg" onclick="closeModal(event)"><div class="modal" onclick="event.stopPropagation()">
+    <h3>🛟 পাসওয়ার্ড রিকভারি</h3>
+    <p class="muted" style="margin-bottom:10px;line-height:1.7">আপনার রিকভারি ইমেইল দিন। সেখানে পাসওয়ার্ড রিসেটের লিংক যাবে। লিংকে নতুন পাসওয়ার্ড দিয়ে এখানে এসে লগইন করুন।</p>
+    <input type="email" id="fgMail" placeholder="রিকভারি ইমেইল" value="${esc(em)}">
+    <button class="green" id="fgBtn" onclick="sendReset()">রিসেট লিংক পাঠান</button>
+    <button class="ghost" onclick="closeModal()">বাতিল</button></div></div>`;
+}
+function sendReset() {
+  const em = document.getElementById('fgMail').value.trim();
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return toast('সঠিক ইমেইল দিন');
+  if (!auth) return toast('❌ Firebase লোড হয়নি — নেট চেক করুন');
+  const b = document.getElementById('fgBtn'); b.disabled = true;
+  auth.sendPasswordResetEmail(em).then(() => {
+    lsSet('bk_remail', em); closeModal();
+    toast('✅ রিসেট লিংক পাঠানো হয়েছে — ইনবক্স/স্প্যাম দেখুন');
+  }).catch(e => { b.disabled = false; toast(e.code === 'auth/network-request-failed' ? '❌ ইন্টারনেট সংযোগ নেই' : '❌ পাঠানো যায়নি (' + (e.code || '') + ')'); });
+}
+function saveRecoveryEmail() {
+  const o = document.getElementById('reOld').value, em = document.getElementById('reMail').value.trim();
+  if (!FB_ADMIN || !auth.currentUser) return toast('শুধু অ্যাডমিন সেট করতে পারবে');
+  if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(em)) return toast('সঠিক ইমেইল দিন');
+  if (!o) return toast('বর্তমান পাসওয়ার্ড দিন');
+  const u = auth.currentUser, C = firebase.auth.EmailAuthProvider;
+  u.reauthenticateWithCredential(C.credential(u.email, o + '#bk'))
+    .catch(() => u.reauthenticateWithCredential(C.credential(u.email, o)))
+    .then(() => u.verifyBeforeUpdateEmail(em))
+    .then(() => {
+      lsSet('bk_remail', em);
+      ['reOld', 'reMail'].forEach(id => document.getElementById(id).value = '');
+      toast('✅ ' + em + '-এ লিংক গেছে — ক্লিক করে ভেরিফাই করুন');
+      reStatus();
+    })
+    .catch(e => toast(e.code === 'auth/network-request-failed' ? '❌ ইন্টারনেট সংযোগ নেই' : '❌ বর্তমান পাসওয়ার্ড ভুল বা সমস্যা (' + (e.code || '') + ')'));
+}
+function reStatus() {
+  const el = document.getElementById('reStatus'); if (!el) return;
+  const e = (auth && auth.currentUser && auth.currentUser.email) || '';
+  el.textContent = e && !/@bhatkuri\.app$/.test(e) ? '✅ রিকভারি ইমেইল চালু: ' + e : '⚪ এখনো আসল ইমেইল যুক্ত নেই';
 }
 function resetByAnswer() {
   const left = lockLeft();
