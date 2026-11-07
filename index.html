@@ -831,6 +831,58 @@ body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.
 #loginBox .lg-go i:nth-of-type(2){animation-delay:.2s}#loginBox .lg-go i:nth-of-type(3){animation-delay:.4s}
 #loginBox .lg-qa{position:relative;z-index:1;width:100%;max-width:340px;margin:14px 0 0;padding:14px;border-radius:18px;font-size:14px;background:rgba(255,255,255,.06);color:#f1d98f;border:1px solid rgba(241,217,143,.45);box-shadow:none}
 #loginBox .lg-qa:hover{background:rgba(241,217,143,.12)}
+body #loginBox{position:fixed;inset:0;margin:0;border-radius:0;padding:24px 24px 96px}
+.lg-deco{position:absolute;inset:0;overflow:hidden;pointer-events:none;z-index:0}
+.lg-moon{position:absolute;right:9%;top:7%;width:46px;height:46px;border-radius:50%;background:radial-gradient(circle at 35% 35%,#fffbe8,#f1d98f 70%);box-shadow:0 0 30px 8px rgba(241,217,143,.35),0 0 90px 30px rgba(241,217,143,.15);animation:lgMoon 6s ease-in-out infinite}
+@keyframes lgMoon{50%{transform:translateY(6px);box-shadow:0 0 36px 12px rgba(241,217,143,.45),0 0 100px 36px rgba(241,217,143,.2)}}
+.lg-st{position:absolute;width:3px;height:3px;border-radius:50%;background:#fff;animation:lgTw 2.8s ease-in-out infinite}
+@keyframes lgTw{0%,100%{opacity:.15}50%{opacity:.95}}
+.lg-cl{position:absolute;left:0;width:84px;height:22px;border-radius:20px;background:rgba(255,255,255,.07);box-shadow:24px -9px 0 5px rgba(255,255,255,.07),50px 1px 0 1px rgba(255,255,255,.06);animation:lgDrift 80s linear infinite}
+.lg-cl.c2{transform:scale(.7)}
+@keyframes lgDrift{from{margin-left:-160px}to{margin-left:110vw}}
+.lg-fl{position:absolute;bottom:-40px;opacity:0;animation:lgRise 14s linear infinite;filter:drop-shadow(0 0 6px rgba(241,217,143,.5))}
+@keyframes lgRise{0%{transform:translate(0,0) rotate(0);opacity:0}10%{opacity:.75}50%{transform:translate(14px,-45vh) rotate(8deg)}90%{opacity:.5}100%{transform:translate(-10px,-100vh) rotate(-8deg);opacity:0}}
+.lg-village{position:absolute;left:0;right:0;bottom:0;width:100%;height:110px}
+.lg-w{animation:lgWin 3.2s ease-in-out infinite}.lg-w.w2{animation-delay:1s}.lg-w.w3{animation-delay:2s}
+@keyframes lgWin{0%,100%{opacity:.35}50%{opacity:1}}
+@media (prefers-reduced-motion:reduce){.lg-deco *{animation:none!important}}
+/* ===== PREMIUM MOTION (ভেতরের অ্যানিমেশন) ===== */
+@keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes growX{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+@keyframes growY{from{transform:scaleY(0)}to{transform:scaleY(1)}}
+@keyframes ripple{to{transform:scale(1);opacity:0}}
+@keyframes fabPulse{0%{box-shadow:0 12px 24px rgba(168,129,43,.5),0 0 0 0 rgba(216,180,92,.55)}70%,100%{box-shadow:0 12px 24px rgba(168,129,43,.5),0 0 0 16px rgba(216,180,92,0)}}
+@keyframes navPop{0%{transform:translateY(4px) scale(.8)}60%{transform:translateY(-5px) scale(1.18)}100%{transform:translateY(-2px) scale(1.08)}}
+@keyframes heroShift{0%,100%{background-position:0% 50%}50%{background-position:100% 50%}}
+@keyframes stampIn{0%{opacity:0;transform:rotate(-14deg) scale(2.4)}60%{opacity:1;transform:rotate(-14deg) scale(.92)}100%{opacity:1;transform:rotate(-14deg) scale(1)}}
+@keyframes appIn{from{opacity:0}to{opacity:1}}
+#app{animation:appIn .6s ease both}
+.tab-in>*{animation:fadeUp .5s cubic-bezier(.2,.7,.2,1) both}
+.tab-in>*:nth-child(2){animation-delay:.07s}.tab-in>*:nth-child(3){animation-delay:.14s}.tab-in>*:nth-child(4){animation-delay:.21s}
+.tab-in>*:nth-child(5){animation-delay:.28s}.tab-in>*:nth-child(6){animation-delay:.35s}.tab-in>*:nth-child(n+7){animation-delay:.42s}
+.tab-in #pxBox{animation:none}
+.tab-in #pxBox>*{animation:fadeUp .55s cubic-bezier(.2,.7,.2,1) both}
+.tab-in #pxBox>*:nth-child(2){animation-delay:.08s}.tab-in #pxBox>*:nth-child(3){animation-delay:.16s}.tab-in #pxBox>*:nth-child(4){animation-delay:.24s}
+.tab-in #pxBox>*:nth-child(n+5){animation-delay:.32s}
+.px-hero{background-size:220% 220%;animation:heroShift 14s ease infinite}
+.progress>div,.px-top .nm .pg i{transform-origin:left;animation:growX .9s cubic-bezier(.2,.8,.2,1) both .15s}
+#chart div[style*="linear-gradient(180deg"]{transform-origin:bottom;animation:growY .8s cubic-bezier(.2,.8,.2,1) both .1s}
+.px-ev,.px-top{animation:fadeUp .45s ease both}
+.px-ev:nth-child(2),.px-top:nth-child(2){animation-delay:.07s}.px-ev:nth-child(3),.px-top:nth-child(3){animation-delay:.14s}
+.px-ev:nth-child(4){animation-delay:.21s}.px-ev:nth-child(5){animation-delay:.28s}
+.bnav .bn.fab{animation:fabPulse 3.2s ease-out infinite}
+.bnav .bn.on svg{animation:navPop .4s ease both}
+.modal-bg,.sheet-bg.show{animation:fadeIn .22s ease}
+.modal .rc-stamp{animation:stampIn .55s cubic-bezier(.2,.8,.2,1) .35s both}
+.stat,.card,.member-row,.due-row,.pf-card,.cm-card,.px-pr{transition:transform .2s ease,box-shadow .2s ease,background .2s ease}
+.stat:active,.cm-card:active{transform:scale(.97)}
+.pf-card:active,.member-row:active,.due-row:active{background:color-mix(in srgb,var(--gold) 12%,transparent)}
+body .toast{transform:translateX(-50%) translateY(14px);transition:opacity .3s,transform .3s}
+body .toast.show{transform:translateX(-50%) translateY(0)}
+.rp-host{position:relative;overflow:hidden}
+.rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:ripple .6s ease-out;pointer-events:none}
+@media (prefers-reduced-motion:reduce){#app,.tab-in>*,.px-hero,.progress>div,.bnav .bn.fab,.bnav .bn.on svg,.modal .rc-stamp,.px-ev,.px-top,#chart div{animation:none!important}}
 </style>
 </head>
 <body>
@@ -842,6 +894,25 @@ body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.
 
 <!-- লগইন -->
 <div id="loginBox" class="card">
+  <div class="lg-deco"><div class="lg-moon"></div><span class="lg-st" style="left:44%;top:11%;animation-delay:1.2s;transform:scale(0.6)"></span><span class="lg-st" style="left:12%;top:36%;animation-delay:0.3s;transform:scale(0.6)"></span><span class="lg-st" style="left:67%;top:15%;animation-delay:0.1s;transform:scale(1.3)"></span><span class="lg-st" style="left:56%;top:6%;animation-delay:0.7s;transform:scale(1.3)"></span><span class="lg-st" style="left:10%;top:38%;animation-delay:0.4s;transform:scale(0.8)"></span><span class="lg-st" style="left:83%;top:5%;animation-delay:1.7s;transform:scale(1.3)"></span><span class="lg-st" style="left:9%;top:16%;animation-delay:0.1s;transform:scale(0.8)"></span><span class="lg-st" style="left:40%;top:28%;animation-delay:0.4s;transform:scale(0.6)"></span><span class="lg-st" style="left:76%;top:21%;animation-delay:1.7s;transform:scale(0.8)"></span><span class="lg-st" style="left:16%;top:38%;animation-delay:1.9s;transform:scale(1)"></span><span class="lg-st" style="left:15%;top:37%;animation-delay:2.1s;transform:scale(0.6)"></span><span class="lg-st" style="left:82%;top:15%;animation-delay:1.5s;transform:scale(1.3)"></span><span class="lg-st" style="left:43%;top:31%;animation-delay:1.8s;transform:scale(1.3)"></span><span class="lg-st" style="left:49%;top:21%;animation-delay:0.7s;transform:scale(0.8)"></span><span class="lg-st" style="left:92%;top:17%;animation-delay:0.2s;transform:scale(1)"></span><span class="lg-st" style="left:70%;top:33%;animation-delay:2.6s;transform:scale(1.3)"></span><span class="lg-st" style="left:39%;top:6%;animation-delay:0.4s;transform:scale(1.3)"></span><span class="lg-st" style="left:24%;top:23%;animation-delay:0.5s;transform:scale(1.3)"></span><span class="lg-st" style="left:56%;top:4%;animation-delay:2.9s;transform:scale(0.6)"></span><span class="lg-st" style="left:74%;top:38%;animation-delay:2.4s;transform:scale(1)"></span><span class="lg-st" style="left:46%;top:24%;animation-delay:1.8s;transform:scale(1.3)"></span><span class="lg-st" style="left:11%;top:7%;animation-delay:2.8s;transform:scale(1.3)"></span><i class="lg-cl" style="top:14%;animation-duration:70s"></i><i class="lg-cl c2" style="top:26%;animation-duration:95s;animation-delay:-30s"></i><span class="lg-fl" style="left:6%;animation-delay:0.0s;animation-duration:11s;font-size:16px">🏘️</span><span class="lg-fl" style="left:16%;animation-delay:1.7s;animation-duration:14s;font-size:21px">🤝</span><span class="lg-fl" style="left:26%;animation-delay:3.4s;animation-duration:17s;font-size:26px">💰</span><span class="lg-fl" style="left:36%;animation-delay:5.1s;animation-duration:20s;font-size:16px">👥</span><span class="lg-fl" style="left:46%;animation-delay:6.8s;animation-duration:11s;font-size:21px">🌾</span><span class="lg-fl" style="left:56%;animation-delay:8.5s;animation-duration:14s;font-size:26px">✨</span><span class="lg-fl" style="left:66%;animation-delay:10.2s;animation-duration:17s;font-size:16px">🏠</span><span class="lg-fl" style="left:76%;animation-delay:11.9s;animation-duration:20s;font-size:21px">🤝</span><span class="lg-fl" style="left:86%;animation-delay:13.6s;animation-duration:11s;font-size:26px">💰</span><svg class="lg-village" viewBox="0 0 400 120" preserveAspectRatio="xMidYMax slice" xmlns="http://www.w3.org/2000/svg">
+<path d="M0 96 Q100 82 200 94 T400 90 V120 H0Z" fill="#0d1230"/>
+<g fill="#0a0e24">
+<rect x="20" y="70" width="46" height="30"/><path d="M14 70 L43 50 L72 70Z"/>
+<rect x="92" y="78" width="36" height="24"/><path d="M87 78 L110 62 L133 78Z"/>
+<rect x="160" y="64" width="54" height="38"/><path d="M153 64 L187 40 L221 64Z"/>
+<rect x="246" y="76" width="40" height="26"/><path d="M240 76 L266 58 L292 76Z"/>
+<rect x="316" y="68" width="48" height="34"/><path d="M310 68 L340 46 L370 68Z"/>
+<rect x="132" y="86" width="5" height="16"/><circle cx="134.5" cy="80" r="11"/>
+<rect x="298" y="88" width="5" height="14"/><circle cx="300.5" cy="82" r="10"/>
+<rect x="383" y="82" width="4" height="20"/><path d="M385 82 Q372 74 366 80 Q376 76 385 82 Q396 72 404 78 Q394 76 385 82Z"/>
+</g>
+<g fill="#f1d98f">
+<rect class="lg-w" x="35" y="78" width="7" height="8"/><rect class="lg-w w2" x="104" y="84" width="6" height="7"/>
+<rect class="lg-w w3" x="176" y="72" width="8" height="9"/><rect class="lg-w" x="194" y="72" width="8" height="9"/>
+<rect class="lg-w w2" x="260" y="82" width="7" height="8"/><rect class="lg-w w3" x="331" y="76" width="8" height="9"/>
+</g>
+<path d="M0 104 Q120 96 220 104 T400 102 V120 H0Z" fill="#070a1a"/>
+</svg></div>
   <div class="lg-orb o1"></div><div class="lg-orb o2"></div>
   <div class="lg-name" id="lgName"></div>
   <div class="lg-sub">অ্যাডমিন লগইন</div>
@@ -2964,6 +3035,57 @@ function renderAll() {
 }
 
 applyBranding();
+</script>
+<script>
+(function(){
+  // ট্যাব বদলের অ্যানিমেশন
+  function tabIn(n){
+    var t=document.getElementById('tab-'+n); if(!t) return;
+    t.classList.remove('tab-in'); void t.offsetWidth; t.classList.add('tab-in');
+    setTimeout(function(){t.classList.remove('tab-in');},1200);
+  }
+  var _st=switchTab; switchTab=function(n,e){_st(n,e); tabIn(n);};
+  var _in=init; init=function(){_in.apply(this,arguments); tabIn('dash');};
+
+  // সংখ্যা ০ থেকে গুনে উঠবে
+  var cache={}, BN='০১২৩৪৫৬৭৮৯';
+  function toNum(t){return parseInt(String(t).replace(/[০-৯]/g,function(d){return BN.indexOf(d);}).replace(/[^0-9]/g,''),10)||0;}
+  function fmt(n,bnFlag){var t=String(n);return bnFlag?t.replace(/\d/g,function(d){return BN[d];}):t;}
+  function count(el,key){
+    var txt=el.textContent, m=txt.match(/^(\D*?)([0-9০-৯]+)(.*)$/);
+    if(!m) return;
+    var pre=m[1], suf=m[3], bnFlag=/[০-৯]/.test(m[2]), to=toNum(m[2]);
+    if(cache[key]===to) return;
+    var from=cache[key]===undefined?0:cache[key]; cache[key]=to;
+    if(el._raf) cancelAnimationFrame(el._raf);
+    var st=null,dur=900;
+    function step(ts){
+      if(st===null) st=ts;
+      var k=Math.min(1,(ts-st)/dur), e=1-Math.pow(1-k,3);
+      el.textContent=pre+fmt(Math.round(from+(to-from)*e),bnFlag)+suf;
+      if(k<1) el._raf=requestAnimationFrame(step); else el.textContent=pre+fmt(to,bnFlag)+suf;
+    }
+    el._raf=requestAnimationFrame(step);
+  }
+  function run(){
+    try{
+      document.querySelectorAll('.stat .num').forEach(function(el){count(el,el.id||'n');});
+      var h=document.querySelector('.px-hero .big'); if(h) count(h,'hero');
+    }catch(e){}
+  }
+  var _rd=renderDashboard; renderDashboard=function(){_rd.apply(this,arguments); run();};
+
+  // বাটনে রিপল
+  var skip=['bn','del','pf-ib','px-a','pf-x','lg-eye','icon-btn','it'];
+  document.addEventListener('click',function(e){
+    var b=e.target.closest&&e.target.closest('button');
+    if(!b||skip.some(function(c){return b.classList.contains(c);})) return;
+    b.classList.add('rp-host');
+    var r=b.getBoundingClientRect(), d=Math.max(r.width,r.height)*2, s=document.createElement('span');
+    s.className='rip'; s.style.cssText='width:'+d+'px;height:'+d+'px;left:'+(e.clientX-r.left-d/2)+'px;top:'+(e.clientY-r.top-d/2)+'px';
+    b.appendChild(s); setTimeout(function(){s.remove();},650);
+  },true);
+})();
 </script>
 <script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
 </body>
