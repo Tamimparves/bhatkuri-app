@@ -17,26 +17,23 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK and Accept Licenses
+      - name: Setup Android SDK via Ubuntu
         run: |
-          # Create Android SDK directory
-          export ANDROID_HOME=$HOME/android-sdk
-          mkdir -p $ANDROID_HOME/cmdline-tools
-          
-          # Download and set up command-line tools
-          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
-          unzip -q cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
-          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
-          
-          # Add to PATH
+          # Install Android SDK Command-line tools directly using apt
+          sudo apt-get update
+          sudo apt-get install -y android-sdk
+
+          # Set Android Home
+          export ANDROID_HOME=/usr/lib/android-sdk
+          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
           echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
           echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
-          
+
           # Accept licenses automatically
-          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
-          
-          # Install required packages
-          sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-34" "build-tools;34.0.0"
+          yes | sdkmanager --licenses || true
+
+          # Install platform tools and build tools
+          sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: Create Android project
         run: |
@@ -152,7 +149,7 @@ jobs:
           }
           EOF
 
-          export ANDROID_HOME=$HOME/android-sdk
+          export ANDROID_HOME=/usr/lib/android-sdk
           ./gradlew assembleDebug
 
       - name: Upload APK
