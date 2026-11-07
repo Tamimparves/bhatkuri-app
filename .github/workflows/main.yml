@@ -17,31 +17,26 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - name: Setup Android SDK via Ubuntu
+      # ১. এখানে ubuntu apt এর বদলে অফিসিয়াল setup-android@v4 ব্যবহার করা হয়েছে
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v4
+        with:
+          packages: 'platform-tools'
+
+      - name: Install required SDK components
         run: |
-          # Install Android SDK Command-line tools directly using apt
-          sudo apt-get update
-          sudo apt-get install -y android-sdk
-
-          # Set Android Home
-          export ANDROID_HOME=/usr/lib/android-sdk
-          echo "ANDROID_HOME=$ANDROID_HOME" >> $GITHUB_ENV
-          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
-          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
-
-          # Accept licenses automatically
-          yes | sdkmanager --licenses || true
-
-          # Install platform tools and build tools
           sdkmanager "platforms;android-34" "build-tools;34.0.0"
 
       - name: Create Android project
         run: |
+          # ফোল্ডার স্ট্রাকচার তৈরি
           mkdir -p bhatkuri-android/app/src/main/java/app/bhatkuri
           mkdir -p bhatkuri-android/app/src/main/res/mipmap-xxhdpi
+          # আইকন কপি করা (আপনার রিপোজিটরিতে icon-192.png থাকতে হবে)
           cp icon-192.png bhatkuri-android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
           cd bhatkuri-android
 
+          # settings.gradle
           cat > settings.gradle << 'EOF'
           pluginManagement {
               repositories {
@@ -58,52 +53,68 @@ jobs:
               }
           }
           rootProject.name = "Bhatkuri"
-          include 'app'
+          include ':app'
           EOF
 
+          # build.gradle (Root)
           cat > build.gradle << 'EOF'
           plugins {
               id 'com.android.application' version '8.5.2' apply false
           }
           EOF
 
+          # gradle.properties
           cat > gradle.properties << 'EOF'
           org.gradle.jvmargs=-Xmx2048m
+          android.useAndroidX=true
           EOF
 
+          # app/build.gradle (এখানে android{} ব্লক এবং dependencies যোগ করা হয়েছে)
           cat > app/build.gradle << 'EOF'
           plugins {
               id 'com.android.application'
           }
+
           android {
-              namespace 'app.Bhatkuri'
+              namespace 'app.bhatkuri'
               compileSdk 34
+
               defaultConfig {
-                  applicationId "app.bhatkuri.sangathan"
+                  applicationId "app.bhatkuri"
                   minSdk 24
                   targetSdk 34
                   versionCode 1
                   versionName "1.0"
               }
+
+              buildTypes {
+                  release {
+                      minifyEnabled false
+                      proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+                  }
+              }
               compileOptions {
-                  sourceCompatibility JavaVersion.VERSION_17
-                  targetCompatibility JavaVersion.VERSION_17
+                  sourceCompatibility JavaVersion.VERSION_1_8
+                  targetCompatibility JavaVersion.VERSION_1_8
               }
           }
+
           dependencies {
               implementation 'androidx.appcompat:appcompat:1.6.1'
+              implementation 'com.google.android.material:material:1.11.0'
           }
           EOF
 
+          # AndroidManifest.xml তৈরি
+          mkdir -p app/src/main
           cat > app/src/main/AndroidManifest.xml << 'EOF'
+          <?xml version="1.0" encoding="utf-8"?>
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
-              <uses-permission android:name="android.permission.INTERNET" />
               <application
                   android:allowBackup="true"
                   android:icon="@mipmap/ic_launcher"
                   android:label="Bhatkuri"
-                  android:roundIcon="@mipmap/ic_launcher"
-                  android:usesCleartextTraffic="true">
+                  android:theme="@style/Theme.AppCompat.Light.NoActionBar">
                   <activity
                       android:name=".MainActivity"
                       android:exported="true">
@@ -116,40 +127,31 @@ jobs:
           </manifest>
           EOF
 
-          mkdir -p app/src/main/res/layout
-          cat > app/src/main/res/layout/activity_main.xml << 'EOF'
-          <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:layout_width="match_parent"
-              android:layout_height="match_parent">
-              <WebView
-                  android:id="@+id/webview"
-                  android:layout_width="match_parent"
-                  android:layout_height="match_parent"/>
-          </RelativeLayout>
-          EOF
-
-          mkdir -p app/src/main/java/app/bhatkuri
+          # MainActivity.java তৈরি (এটি ছাড়া অ্যাপ ক্র্যাশ করবে)
           cat > app/src/main/java/app/bhatkuri/MainActivity.java << 'EOF'
           package app.bhatkuri;
+
           import android.os.Bundle;
-          import android.webkit.WebView;
-          import android.webkit.WebViewClient;
+          import android.widget.TextView;
           import androidx.appcompat.app.AppCompatActivity;
+
           public class MainActivity extends AppCompatActivity {
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
-                  setContentView(R.layout.activity_main);
-                  WebView webView = findViewById(R.id.webview);
-                  webView.getSettings().setJavaScriptEnabled(true);
-                  webView.getSettings().setDomStorageEnabled(true);
-                  webView.setWebViewClient(new WebViewClient());
-                  webView.loadUrl("https://tamimparves.github.io/bhatkuri-app/");
+                  TextView textView = new TextView(this);
+                  textView.setText("Hello from Bhatkuri App!");
+                  textView.setTextSize(24);
+                  setContentView(textView);
               }
           }
           EOF
 
-          export ANDROID_HOME=/usr/lib/android-sdk
+      - name: Make Gradlew executable and Build APK
+        run: |
+          cd bhatkuri-android
+          gradle wrapper
+          chmod +x gradlew
           ./gradlew assembleDebug
 
       - name: Upload APK
@@ -157,4 +159,3 @@ jobs:
         with:
           name: app-debug
           path: bhatkuri-android/app/build/outputs/apk/debug/app-debug.apk
-          
