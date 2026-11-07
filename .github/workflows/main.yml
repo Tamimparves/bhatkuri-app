@@ -17,12 +17,26 @@ jobs:
           distribution: temurin
           java-version: '17'
 
-      - uses: android-actions/setup-android@v3
-        with:
-            accept-android-sdk-licenses: true
-      - name: Install Android SDK packages
+      - name: Setup Android SDK and Accept Licenses
         run: |
-          sdkmanager "platforms;android-34" "build-tools;34.0.0" || true
+          # Create Android SDK directory
+          export ANDROID_HOME=$HOME/android-sdk
+          mkdir -p $ANDROID_HOME/cmdline-tools
+          
+          # Download and set up command-line tools
+          wget https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip -O cmdline-tools.zip
+          unzip -q cmdline-tools.zip -d $ANDROID_HOME/cmdline-tools
+          mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest
+          
+          # Add to PATH
+          echo "$ANDROID_HOME/cmdline-tools/latest/bin" >> $GITHUB_PATH
+          echo "$ANDROID_HOME/platform-tools" >> $GITHUB_PATH
+          
+          # Accept licenses automatically
+          yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+          
+          # Install required packages
+          sdkmanager --sdk_root=$ANDROID_HOME "platforms;android-34" "build-tools;34.0.0"
 
       - name: Create Android project
         run: |
@@ -31,7 +45,7 @@ jobs:
           cp icon-192.png bhatkuri-android/app/src/main/res/mipmap-xxhdpi/ic_launcher.png
           cd bhatkuri-android
 
-          cat > settings.gradle <<'EOF'
+          cat > settings.gradle << 'EOF'
           pluginManagement {
               repositories {
                   google()
@@ -40,60 +54,62 @@ jobs:
               }
           }
           dependencyResolutionManagement {
+              repositoriesMode.set(RepositoriesMode.FAIL_ON_PROJECT_REPOS)
               repositories {
                   google()
                   mavenCentral()
               }
           }
-          rootProject.name = "bhatkuri"
-          include ':app'
+          rootProject.name = "Bhatkuri"
+          include 'app'
           EOF
 
-          cat > build.gradle <<'EOF'
+          cat > build.gradle << 'EOF'
           plugins {
               id 'com.android.application' version '8.5.2' apply false
           }
           EOF
 
-          cat > gradle.properties <<'EOF'
+          cat > gradle.properties << 'EOF'
           org.gradle.jvmargs=-Xmx2048m
           EOF
 
-          cat > app/build.gradle <<'EOF'
+          cat > app/build.gradle << 'EOF'
           plugins {
               id 'com.android.application'
           }
           android {
-              namespace 'app.bhatkuri'
+              namespace 'app.Bhatkuri'
               compileSdk 34
               defaultConfig {
-                  applicationId 'app.bhatkuri.sangathan'
+                  applicationId "app.bhatkuri.sangathan"
                   minSdk 24
                   targetSdk 34
                   versionCode 1
-                  versionName '1.0'
+                  versionName "1.0"
               }
               compileOptions {
                   sourceCompatibility JavaVersion.VERSION_17
                   targetCompatibility JavaVersion.VERSION_17
               }
           }
+          dependencies {
+              implementation 'androidx.appcompat:appcompat:1.6.1'
+          }
           EOF
 
-          cat > app/src/main/AndroidManifest.xml <<'EOF'
-          <?xml version="1.0" encoding="utf-8"?>
+          cat > app/src/main/AndroidManifest.xml << 'EOF'
           <manifest xmlns:android="http://schemas.android.com/apk/res/android">
               <uses-permission android:name="android.permission.INTERNET" />
               <application
-                  android:label="ভাটকুড়ি সংগঠন"
-                  android:icon="@mipmap/ic_launcher"
                   android:allowBackup="true"
-                  android:theme="@android:style/Theme.DeviceDefault.NoActionBar">
+                  android:icon="@mipmap/ic_launcher"
+                  android:label="Bhatkuri"
+                  android:roundIcon="@mipmap/ic_launcher"
+                  android:usesCleartextTraffic="true">
                   <activity
                       android:name=".MainActivity"
-                      android:exported="true"
-                      android:configChanges="orientation|screenSize|keyboardHidden|screenLayout|smallestScreenSize|uiMode"
-                      android:windowSoftInputMode="adjustResize">
+                      android:exported="true">
                       <intent-filter>
                           <action android:name="android.intent.action.MAIN" />
                           <category android:name="android.intent.category.LAUNCHER" />
@@ -103,289 +119,45 @@ jobs:
           </manifest>
           EOF
 
-          cat > app/src/main/java/app/bhatkuri/MainActivity.java <<'EOF'
-          package app.bhatkuri;
+          mkdir -p app/src/main/res/layout
+          cat > app/src/main/res/layout/activity_main.xml << 'EOF'
+          <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+              android:layout_width="match_parent"
+              android:layout_height="match_parent">
+              <WebView
+                  android:id="@+id/webview"
+                  android:layout_width="match_parent"
+                  android:layout_height="match_parent"/>
+          </RelativeLayout>
+          EOF
 
-          import android.app.Activity;
-          import android.content.ContentValues;
-          import android.content.Intent;
-          import android.graphics.Bitmap;
-          import android.graphics.Color;
-          import android.net.Uri;
-          import android.os.Build;
+          mkdir -p app/src/main/java/app/bhatkuri
+          cat > app/src/main/java/app/bhatkuri/MainActivity.java << 'EOF'
+          package app.bhatkuri;
           import android.os.Bundle;
-          import android.os.Environment;
-          import android.os.Message;
-          import android.print.PrintAttributes;
-          import android.print.PrintManager;
-          import android.provider.MediaStore;
-          import android.util.Base64;
-          import android.view.ViewGroup;
-          import android.webkit.JavascriptInterface;
-          import android.webkit.URLUtil;
-          import android.webkit.ValueCallback;
-          import android.webkit.WebChromeClient;
-          import android.webkit.WebResourceError;
-          import android.webkit.WebResourceRequest;
-          import android.webkit.WebSettings;
           import android.webkit.WebView;
           import android.webkit.WebViewClient;
-          import android.widget.Toast;
-          import java.io.File;
-          import java.io.FileOutputStream;
-          import java.io.OutputStream;
-          import org.json.JSONObject;
-
-          public class MainActivity extends Activity {
-              private static final String HOME = "https://tamimparves.github.io/bhatkuri-app/";
-              private static final String HOST = "tamimparves.github.io";
-              private static final int REQ_FILE = 1;
-              private WebView web;
-              private ValueCallback<Uri[]> fileCb;
-
+          import androidx.appcompat.app.AppCompatActivity;
+          public class MainActivity extends AppCompatActivity {
               @Override
               protected void onCreate(Bundle savedInstanceState) {
                   super.onCreate(savedInstanceState);
-                  getWindow().setStatusBarColor(Color.parseColor("#151D44"));
-                  getWindow().setNavigationBarColor(Color.parseColor("#151D44"));
-
-                  web = new WebView(this);
-                  setContentView(web, new ViewGroup.LayoutParams(
-                          ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-
-                  WebSettings s = web.getSettings();
-                  s.setJavaScriptEnabled(true);
-                  s.setDomStorageEnabled(true);
-                  s.setDatabaseEnabled(true);
-                  s.setAllowFileAccess(false);
-                  s.setTextZoom(100);
-                  s.setJavaScriptCanOpenWindowsAutomatically(true);
-                  s.setSupportMultipleWindows(true);
-                  s.setMediaPlaybackRequiresUserGesture(false);
-
-                  web.addJavascriptInterface(new Bridge(), "AndroidApp");
-
-                  web.setWebViewClient(new WebViewClient() {
-                      @Override
-                      public boolean shouldOverrideUrlLoading(WebView v, WebResourceRequest r) {
-                          return handleUrl(r.getUrl());
-                      }
-
-                      @Override
-                      public void onPageFinished(WebView v, String url) {
-                          v.evaluateJavascript("window.print=function(){AndroidApp.print();};", null);
-                      }
-
-                      @Override
-                      public void onReceivedError(WebView v, WebResourceRequest r, WebResourceError e) {
-                          if (r.isForMainFrame()) {
-                              v.loadDataWithBaseURL(null,
-                                  "<meta name='viewport' content='width=device-width,initial-scale=1'>"
-                                  + "<body style='font-family:sans-serif;text-align:center;padding:40px'>"
-                                  + "<h2>ইন্টারনেট সংযোগ নেই</h2><p>নেট চালু করে আবার চেষ্টা করুন</p>"
-                                  + "<button style='padding:12px 24px;font-size:18px' onclick=\"location.href='" + HOME + "'\">আবার চেষ্টা করুন</button>"
-                                  + "</body>",
-                                  "text/html", "UTF-8", null);
-                          }
-                      }
-                  });
-
-                  web.setWebChromeClient(new WebChromeClient() {
-                      @Override
-                      public boolean onShowFileChooser(WebView w, ValueCallback<Uri[]> cb, FileChooserParams p) {
-                          if (fileCb != null) fileCb.onReceiveValue(null);
-                          fileCb = cb;
-                          try {
-                              startActivityForResult(p.createIntent(), REQ_FILE);
-                          } catch (Exception e) {
-                              fileCb = null;
-                              return false;
-                          }
-                          return true;
-                      }
-
-                      @Override
-                      public boolean onCreateWindow(WebView v, boolean isDialog, boolean isUserGesture, Message resultMsg) {
-                          final WebView tmp = new WebView(MainActivity.this);
-                          tmp.setWebViewClient(new WebViewClient() {
-                              private boolean done = false;
-
-                              private void go(String url) {
-                                  if (done || url == null || url.equals("about:blank")) return;
-                                  done = true;
-                                  Uri u = Uri.parse(url);
-                                  String sc = u.getScheme() == null ? "" : u.getScheme();
-                                  if (sc.equals("blob") || sc.equals("data")) {
-                                      fetchBlob(url, "", "");
-                                  } else if (!handleUrl(u)) {
-                                      web.loadUrl(url);
-                                  }
-                                  tmp.post(new Runnable() {
-                                      public void run() {
-                                          tmp.stopLoading();
-                                          tmp.destroy();
-                                      }
-                                  });
-                              }
-
-                              @Override
-                              public boolean shouldOverrideUrlLoading(WebView w, WebResourceRequest r) {
-                                  go(r.getUrl().toString());
-                                  return true;
-                              }
-
-                              @Override
-                              public void onPageStarted(WebView w, String url, Bitmap f) {
-                                  go(url);
-                              }
-                          });
-                          WebView.WebViewTransport t = (WebView.WebViewTransport) resultMsg.obj;
-                          t.setWebView(tmp);
-                          resultMsg.sendToTarget();
-                          return true;
-                      }
-                  });
-
-                  web.setDownloadListener(new android.webkit.DownloadListener() {
-                      @Override
-                      public void onDownloadStart(String url, String ua, String cd, String mime, long len) {
-                          if (url.startsWith("blob:") || url.startsWith("data:")) {
-                              fetchBlob(url, URLUtil.guessFileName(url, cd, mime), mime == null ? "" : mime);
-                          } else {
-                              try {
-                                  startActivity(new Intent(Intent.ACTION_VIEW, Uri.parse(url)));
-                              } catch (Exception e) {
-                                  toast("ডাউনলোড করা যায়নি");
-                              }
-                          }
-                      }
-                  });
-
-                  web.loadUrl(HOME);
-              }
-
-              private boolean handleUrl(Uri u) {
-                  String sc = u.getScheme() == null ? "" : u.getScheme();
-                  if (sc.equals("blob") || sc.equals("data") || sc.equals("about") || sc.equals("javascript")) return false;
-                  if ((sc.equals("https") || sc.equals("http")) && HOST.equals(u.getHost())) return false;
-                  try {
-                      startActivity(new Intent(Intent.ACTION_VIEW, u));
-                  } catch (Exception e) {
-                      toast("খুলতে পারেনি");
-                  }
-                  return true;
-              }
-
-              private void fetchBlob(String url, String name, String mime) {
-                  String js = "(function(){fetch(" + JSONObject.quote(url) + ")"
-                          + ".then(function(r){return r.blob();})"
-                          + ".then(function(b){var f=new FileReader();"
-                          + "f.onloadend=function(){AndroidApp.saveBase64(f.result," + JSONObject.quote(name) + "," + JSONObject.quote(mime) + ");};"
-                          + "f.readAsDataURL(b);})"
-                          + ".catch(function(e){AndroidApp.fail(String(e));});})();";
-                  web.evaluateJavascript(js, null);
-              }
-
-              private void toast(final String m) {
-                  runOnUiThread(new Runnable() {
-                      public void run() {
-                          Toast.makeText(MainActivity.this, m, Toast.LENGTH_LONG).show();
-                      }
-                  });
-              }
-
-              private Uri saveFile(String name, String mime, byte[] data) throws Exception {
-                  if (Build.VERSION.SDK_INT >= 29) {
-                      ContentValues v = new ContentValues();
-                      v.put(MediaStore.Downloads.DISPLAY_NAME, name);
-                      v.put(MediaStore.Downloads.MIME_TYPE, mime);
-                      v.put(MediaStore.Downloads.RELATIVE_PATH, Environment.DIRECTORY_DOWNLOADS);
-                      Uri uri = getContentResolver().insert(MediaStore.Downloads.EXTERNAL_CONTENT_URI, v);
-                      OutputStream os = getContentResolver().openOutputStream(uri);
-                      os.write(data);
-                      os.close();
-                      return uri;
-                  } else {
-                      File dir = getExternalFilesDir(Environment.DIRECTORY_DOWNLOADS);
-                      File f = new File(dir, name);
-                      FileOutputStream os = new FileOutputStream(f);
-                      os.write(data);
-                      os.close();
-                      return null;
-                  }
-              }
-
-              private class Bridge {
-                  @JavascriptInterface
-                  public void print() {
-                      runOnUiThread(new Runnable() {
-                          public void run() {
-                              PrintManager pm = (PrintManager) getSystemService(PRINT_SERVICE);
-                              pm.print("Bhatkuri", web.createPrintDocumentAdapter("Bhatkuri"),
-                                      new PrintAttributes.Builder().build());
-                          }
-                      });
-                  }
-
-                  @JavascriptInterface
-                  public void fail(String msg) {
-                      toast("ফাইল সেভ করা যায়নি");
-                  }
-
-                  @JavascriptInterface
-                  public void saveBase64(String dataUrl, String name, String mime) {
-                      try {
-                          int c = dataUrl.indexOf(',');
-                          String head = dataUrl.substring(0, c);
-                          byte[] data = Base64.decode(dataUrl.substring(c + 1), Base64.DEFAULT);
-                          String mt = mime;
-                          if (mt == null || mt.length() == 0) {
-                              int a = head.indexOf(':');
-                              int b = head.indexOf(';');
-                              mt = (a >= 0 && b > a) ? head.substring(a + 1, b) : "application/octet-stream";
-                          }
-                          String nm = (name == null || name.length() == 0) ? URLUtil.guessFileName("file", null, mt) : name;
-                          final Uri saved = saveFile(nm, mt, data);
-                          toast("সেভ হয়েছে (Downloads): " + nm);
-                          final String fmt = mt;
-                          if (saved != null && (fmt.equals("application/pdf") || fmt.startsWith("image/"))) {
-                              runOnUiThread(new Runnable() {
-                                  public void run() {
-                                      try {
-                                          Intent i = new Intent(Intent.ACTION_VIEW);
-                                          i.setDataAndType(saved, fmt);
-                                          i.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                          startActivity(i);
-                                      } catch (Exception e) {
-                                      }
-                                  }
-                              });
-                          }
-                      } catch (Exception e) {
-                          toast("ফাইল সেভ করা যায়নি");
-                      }
-                  }
-              }
-
-              @Override
-              protected void onActivityResult(int req, int res, Intent data) {
-                  if (req == REQ_FILE && fileCb != null) {
-                      fileCb.onReceiveValue(WebChromeClient.FileChooserParams.parseResult(res, data));
-                      fileCb = null;
-                  } else {
-                      super.onActivityResult(req, res, data);
-                  }
-              }
-
-              @Override
-              public void onBackPressed() {
-                  if (web.canGoBack()) web.goBack();
-                  else super.onBackPressed();
+                  setContentView(R.layout.activity_main);
+                  WebView webView = findViewById(R.id.webview);
+                  webView.getSettings().setJavaScriptEnabled(true);
+                  webView.getSettings().setDomStorageEnabled(true);
+                  webView.setWebViewClient(new WebViewClient());
+                  webView.loadUrl("https://tamimparves.github.io/bhatkuri-app/");
               }
           }
           EOF
 
-      - uses: gradle/actions/setup-gradle@v4
+          export ANDROID_HOME=$HOME/android-sdk
+          ./gradlew assembleDebug
+
+      - name: Upload APK
+        uses: actions/upload-artifact@v4
         with:
-          gradle-version: '8.7'
+          name: app-debug
+          path: bhatkuri-android/app/build/outputs/apk/debug/app-debug.apk
           
