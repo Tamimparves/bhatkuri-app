@@ -815,6 +815,7 @@ body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.
 <meta name="mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <link rel="apple-touch-icon" href="icon-192.png">
+<style>[onclick^="showForgot("]{display:none!important}</style>
 </head>
 <body>
 
@@ -1076,13 +1077,8 @@ body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.
              onchange="importJSON(event)">
     </div>
     <div class="card wr">
-      <h2>👁️ ভিউয়ার পাসওয়ার্ড (শুধু দেখার জন্য)</h2>
-      <p class="muted" style="margin-bottom:8px">এই পাসওয়ার্ড দিয়ে ঢুকলে সব কিছু দেখা যাবে, কিন্তু কিছু যোগ/এডিট/ডিলিট বা সেটিংস বদলানো যাবে না।</p>
-      <p class="muted" id="vpStatus" style="margin-bottom:8px"></p>
-      <input type="password" id="vpAdm" placeholder="অ্যাডমিন পাসওয়ার্ড">
-      <input type="password" id="vpNew" placeholder="নতুন ভিউয়ার পাসওয়ার্ড (কমপক্ষে ৪ অক্ষর)">
-      <button class="green" onclick="setViewerPass()">ভিউয়ার পাসওয়ার্ড সেট করুন</button>
-      <button class="ghost" onclick="removeViewerPass()">ভিউয়ার অ্যাক্সেস বন্ধ করুন</button>
+      <h2>👁️ ভিউয়ার পাসওয়ার্ড</h2>
+      <p class="muted">ভিউয়ারের পাসওয়ার্ড বদলাতে Firebase Console → Authentication → Users-এ viewer@bhatkuri.app মুছে নতুন পাসওয়ার্ডে আবার যোগ করুন (পাসওয়ার্ডের পেছনে #bk)। ভিউয়ার ও অ্যাডমিনের পাসওয়ার্ড আলাদা রাখুন।</p>
     </div>
     <div class="card wr">
       <h2>🔑 অ্যাডমিন পাসওয়ার্ড পরিবর্তন</h2>
@@ -1091,7 +1087,7 @@ body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.
       <input type="password" id="cpNew2" placeholder="নতুন পাসওয়ার্ড আবার দিন">
       <button class="green" onclick="changePass()">পাসওয়ার্ড বদলান</button>
     </div>
-    <div class="card wr">
+    <div class="card wr" style="display:none">
       <h2>🛟 পাসওয়ার্ড রিকভারি</h2>
       <p class="muted" style="margin-bottom:8px">পাসওয়ার্ড ভুলে গেলে এই প্রশ্নের উত্তর দিয়ে নতুন পাসওয়ার্ড দেওয়া যাবে।</p>
       <input type="password" id="rqCur" placeholder="বর্তমান পাসওয়ার্ড">
@@ -1141,6 +1137,70 @@ body.viewer [onclick^="addMember("],body.viewer [onclick^="deleteMember("],body.
 <footer id="footerText">ডাটা আপনার ব্রাউজারে সংরক্ষিত</footer>
 
 <script>try{localStorage.setItem("_t","1");localStorage.removeItem("_t")}catch(e){var _m={};Object.defineProperty(window,"localStorage",{value:{getItem:function(k){return k in _m?_m[k]:null},setItem:function(k,v){_m[k]=String(v)},removeItem:function(k){delete _m[k]}}})}</script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>
+// ===== Firebase কনফিগ =====
+const firebaseConfig = {
+  apiKey: "AIzaSyBmDsFTaX1abQnPcun9h9AEue0JqMjPHCU",
+  authDomain: "bhatkuri-d414c.firebaseapp.com",
+  databaseURL: "https://bhatkuri-d414c-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "bhatkuri-d414c",
+  appId: "1:666554509163:web:e9f676302901b07ae9ce2e"
+};
+const FB_KEYS = ['bk_members','bk_payments','bk_expenses','bk_roles','bk_settings','bk_docs'];
+let FB_ADMIN = false, auth = null, fdb = null;
+const _lsSet = localStorage.setItem.bind(localStorage);
+try { firebase.initializeApp(firebaseConfig); auth = firebase.auth(); fdb = firebase.database(); } catch (e) { console.error(e); }
+(function () {
+  const orig = Storage.prototype.setItem;
+  Storage.prototype.setItem = function (k, v) {
+    orig.call(this, k, v);
+    if (FB_ADMIN && fdb && this === localStorage && FB_KEYS.includes(k)) { try { fdb.ref('club/' + k).set(String(v)); } catch (e) {} }
+  };
+})();
+function fbApply(v) {
+  let ch = false;
+  FB_KEYS.forEach(k => { if (typeof v[k] === 'string' && localStorage.getItem(k) !== v[k]) { _lsSet(k, v[k]); ch = true; } });
+  return ch;
+}
+function fbStart() {
+  let first = true;
+  fdb.ref('club').on('value', snap => {
+    const v = snap.val();
+    if (first) {
+      first = false;
+      if (!v && FB_ADMIN) FB_KEYS.forEach(k => { const x = localStorage.getItem(k); if (x !== null) fdb.ref('club/' + k).set(x); });
+      else if (v) fbApply(v);
+      document.getElementById('loginBox').classList.add('hidden');
+      document.getElementById('app').classList.remove('hidden');
+      init();
+    } else if (v && fbApply(v)) { try { loadSettings(); renderAll(); } catch (e) {} }
+  }, err => { toast('❌ ডাটা পড়া যায়নি (' + (err && err.code) + ')'); });
+}
+function failLogin() {
+  if (!registerFail()) toast('❌ ভুল পাসওয়ার্ড!');
+  const b = document.getElementById('loginBox'); b.classList.remove('shake'); void b.offsetWidth; b.classList.add('shake');
+}
+async function fbLogin(p) {
+  const btn = document.querySelector('#loginBox .lg-go'); if (btn) btn.disabled = true;
+  const pw = p + '#bk', bad = ['auth/invalid-credential','auth/wrong-password','auth/user-not-found','auth/invalid-login-credentials','auth/invalid-email'];
+  try {
+    let role = '', ok = false;
+    for (const r of ['admin', 'viewer']) {
+      try { await auth.signInWithEmailAndPassword(r + '@bhatkuri.app', pw); role = r; ok = true; break; }
+      catch (e) { if (!bad.includes(e.code)) throw e; }
+    }
+    if (!ok) return failLogin();
+    clearFails();
+    if (role === 'viewer') enterViewer(); else FB_ADMIN = true;
+    fbStart();
+  } catch (e) {
+    toast(e.code === 'auth/network-request-failed' ? '❌ ইন্টারনেট সংযোগ নেই' : '❌ লগইন সমস্যা: ' + (e.code || e.message));
+  } finally { if (btn) btn.disabled = false; }
+}
+</script>
 <script>
 // ===== ডাটা স্টোর =====
 function safeSave(k, v) {
@@ -1351,21 +1411,10 @@ if (localStorage.getItem('bk_theme') === 'dark') {
 function login() {
   const left = lockLeft();
   if (left) return toast('⏳ ' + bn(Math.ceil(left / 1000)) + ' সেকেন্ড পরে চেষ্টা করুন');
-  const _pv = document.getElementById('pin').value;
-  if (!checkPass(_pv) && checkViewer(_pv)) {
-    clearFails(); enterViewer();
-    document.getElementById('loginBox').classList.add('hidden');
-    document.getElementById('app').classList.remove('hidden');
-    init();
-    return;
-  }
-  if (checkPass(_pv)) {
-    clearFails();
-    document.getElementById('loginBox').classList.add('hidden');
-    document.getElementById('app').classList.remove('hidden');
-    init();
-    if (isDefaultPass()) setTimeout(() => toast('⚠️ ডিফল্ট পাসওয়ার্ড চলছে — সেটিংসে গিয়ে বদলান'), 500);
-  } else if (!registerFail()) toast('❌ ভুল পাসওয়ার্ড!');
+  const p = document.getElementById('pin').value;
+  if (!p) return;
+  if (!auth) return toast('❌ ইন্টারনেট সংযোগ নেই বা Firebase লোড হয়নি');
+  fbLogin(p);
 }
 // ===== ভিউয়ার (শুধু দেখা) মোড =====
 function checkViewer(inp) { const h = lsGet('bk_vpass'); return !!h && hp(inp) === h; }
@@ -1399,7 +1448,7 @@ function vpStatus() {
 }
 document.addEventListener('DOMContentLoaded', vpStatus);
 
-function logout() { location.reload(); }
+function logout() { try { auth.signOut(); } catch (e) {} setTimeout(() => location.reload(), 150); }
 
 // ===== ট্যাব =====
 function switchTab(name, el) {
@@ -1633,7 +1682,7 @@ function pfDelDoc(did){if(!confirm('ডকুমেন্টটি মুছব�
   var _st=switchTab;switchTab=function(n,e){_st(n,e);if(n==='profiles')renderProfiles();};
   var _ra=renderAll;renderAll=function(){_ra();renderProfiles();};
   var _dm=deleteMember;deleteMember=function(id){var n=DB.members.length;_dm(id);if(DB.members.length<n){var o=docsAll();delete o[id];docsSave(o);if(PF_ID===id)closePf();}};
-  var _lg=login;login=function(){_lg();var b=document.getElementById('loginBox');if(b&&!b.classList.contains('hidden')){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');}};
+  var _lg=login;login=function(){_lg();return;var b=document.getElementById('loginBox');if(b&&!b.classList.contains('hidden')){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');}};
   var _ab=applyBranding;applyBranding=function(){_ab();var e=document.getElementById('lgName');if(e)e.textContent=DB.settings.name;};
 })();
 function openMore(){document.getElementById('moreSheet').classList.add('show');}
@@ -2404,17 +2453,15 @@ function renderExpenses() {
 }
 
 function changePass() {
-  const o = document.getElementById('cpOld').value;
-  const n = document.getElementById('cpNew').value;
-  const n2 = document.getElementById('cpNew2').value;
-  if (!checkPass(o)) return toast('❌ বর্তমান পাসওয়ার্ড ভুল');
+  const o = document.getElementById('cpOld').value, n = document.getElementById('cpNew').value, n2 = document.getElementById('cpNew2').value;
+  if (!FB_ADMIN || !auth.currentUser) return toast('শুধু অ্যাডমিন পাসওয়ার্ড বদলাতে পারবে');
   if (n.length < 4) return toast('নতুন পাসওয়ার্ড কমপক্ষে ৪ অক্ষরের হতে হবে');
   if (n !== n2) return toast('❌ দুটি পাসওয়ার্ড মেলেনি');
-  lsSet('bk_pass', hp(n));
-  lsDel('bk_pin');
-  ['cpOld','cpNew','cpNew2'].forEach(id => document.getElementById(id).value = '');
-  toast('✅ পাসওয়ার্ড বদলে গেছে');
-  if (!lsGet('bk_ra')) setTimeout(() => toast('🛟 নিচে রিকভারি প্রশ্নও সেট করে রাখুন'), 2500);
+  const u = auth.currentUser;
+  u.reauthenticateWithCredential(firebase.auth.EmailAuthProvider.credential(u.email, o + '#bk'))
+    .then(() => u.updatePassword(n + '#bk'))
+    .then(() => { ['cpOld','cpNew','cpNew2'].forEach(id => document.getElementById(id).value = ''); toast('✅ পাসওয়ার্ড বদলে গেছে'); })
+    .catch(() => toast('❌ বর্তমান পাসওয়ার্ড ভুল বা ইন্টারনেট নেই'));
 }
 
 function updateRecoveryStatus() {
