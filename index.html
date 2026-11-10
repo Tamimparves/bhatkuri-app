@@ -7,7 +7,7 @@
 <title>ভাটকুড়ি সংগঠন</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Hind+Siliguri:wght@400;500;600;700&family=Anek+Bangla:wght@500;600;700&display=swap" rel="stylesheet">
 <style>
 :root {
   --bg: #f1f5f9; --card: #ffffff; --text: #0f172a; --muted: #64748b;
@@ -625,8 +625,8 @@ footer{padding:10px 0 4px;}
 .px-top:last-child{border:none}
 .px-top .md{font-size:24px;width:30px;text-align:center}
 .px-top .nm{flex:1;font-weight:700;font-size:14px}
-.px-top .nm .pg{height:6px;border-radius:6px;background:var(--border);margin-top:6px;overflow:hidden}
-.px-top .nm .pg i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#c9a24a,#f1d98f)}
+.px-top .nm .pgb{height:6px;border-radius:6px;background:var(--border);margin-top:6px;overflow:hidden}
+.px-top .nm .pgb i{display:block;height:100%;border-radius:6px;background:linear-gradient(90deg,#c9a24a,#f1d98f)}
 .px-top .am{font-weight:700;color:var(--green);font-size:14px}
 .px-tl{position:relative;padding-left:22px}
 .px-tl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:linear-gradient(var(--gold),transparent)}
@@ -846,6 +846,43 @@ body #loginBox{position:fixed;inset:0;margin:0;border-radius:0;padding:24px 24px
 .lg-w{animation:lgWin 3.2s ease-in-out infinite}.lg-w.w2{animation-delay:1s}.lg-w.w3{animation-delay:2s}
 @keyframes lgWin{0%,100%{opacity:.35}50%{opacity:1}}
 @media (prefers-reduced-motion:reduce){.lg-deco *{animation:none!important}}
+/* ===== PREMIUM TOAST ===== */
+#toast{display:none!important}
+#toastBox{position:fixed;left:0;right:0;top:calc(10px + env(safe-area-inset-top,0px));z-index:1100;display:flex;flex-direction:column;align-items:center;gap:10px;padding:0 14px;pointer-events:none}
+.tst{--c:#c9a24a;position:relative;overflow:hidden;pointer-events:auto;cursor:pointer;width:100%;max-width:420px;display:flex;align-items:center;gap:12px;padding:13px 16px 15px 13px;border-radius:20px;background:var(--card);color:var(--text);border:1px solid var(--border);box-shadow:0 18px 44px rgba(10,14,40,.28),0 0 0 1px color-mix(in srgb,var(--c) 30%,transparent);animation:tstIn .45s cubic-bezier(.2,.9,.25,1.12) both}
+.tst::before{content:"";position:absolute;left:0;top:0;bottom:0;width:5px;background:var(--c)}
+.tst.ok{--c:#0f9d74}.tst.err{--c:#e0475b}.tst.warn{--c:#e0a526}
+.tst-ic{flex:0 0 42px;height:42px;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:21px;margin-left:4px;background:color-mix(in srgb,var(--c) 16%,transparent);box-shadow:inset 0 0 0 1px color-mix(in srgb,var(--c) 30%,transparent)}
+.tst-tx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.tst-tx b{font-size:12px;font-weight:700;color:var(--c);letter-spacing:.3px}
+.tst-tx span{font-size:14px;font-weight:600;line-height:1.45;word-break:break-word}
+.tst-bar{position:absolute;left:0;bottom:0;height:3px;width:100%;background:linear-gradient(90deg,var(--c),color-mix(in srgb,var(--c) 40%,#fff));transform-origin:left;animation:tstBar var(--dur) linear forwards}
+.tst.out{animation:tstOut .26s ease forwards}
+@keyframes tstIn{from{opacity:0;transform:translateY(-34px) scale(.92)}to{opacity:1;transform:none}}
+@keyframes tstOut{to{opacity:0;transform:translateY(-22px) scale(.95)}}
+@keyframes tstBar{to{transform:scaleX(0)}}
+/* ===== PREMIUM CONFIRM ===== */
+.cf-bg{position:fixed;inset:0;z-index:1000;display:flex;align-items:center;justify-content:center;padding:22px;background:rgba(8,10,28,.62);backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);animation:fadeIn .2s ease}
+.cf-bg.out{opacity:0;transition:opacity .18s}
+.cf-box{position:relative;width:100%;max-width:340px;text-align:center;padding:30px 22px 22px;border-radius:28px;background:var(--card);border:1px solid var(--border);box-shadow:0 30px 70px rgba(0,0,0,.45);animation:cfPop .38s cubic-bezier(.2,.9,.25,1.15) both;overflow:hidden}
+.cf-box::before{content:"";position:absolute;left:0;right:0;top:0;height:5px;background:linear-gradient(90deg,#e0475b,#c9a24a,#e0475b)}
+.cf-bg.out .cf-box{transform:scale(.94);transition:transform .18s}
+@keyframes cfPop{from{opacity:0;transform:translateY(24px) scale(.88)}to{opacity:1;transform:none}}
+.cf-ic{width:70px;height:70px;margin:-2px auto 14px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:32px;background:linear-gradient(145deg,#fde8eb,#f9c9d0);box-shadow:0 0 0 6px rgba(224,71,91,.1),0 12px 24px rgba(224,71,91,.25);animation:cfShake .6s ease .25s both}
+body.dark .cf-ic{background:linear-gradient(145deg,#4a1e29,#7a2a3b)}
+@keyframes cfShake{20%,60%{transform:rotate(-10deg)}40%,80%{transform:rotate(10deg)}100%{transform:none}}
+.cf-box h3{font-size:19px;font-weight:700;margin:0 0 12px;color:var(--text)}
+.cf-who{display:flex;flex-direction:column;align-items:center;gap:4px;margin:0 0 12px;padding:12px;border-radius:18px;background:color-mix(in srgb,var(--gold) 10%,transparent);border:1px solid var(--border)}
+.cf-who:empty{display:none}
+.cf-who .cf-av .avatar{margin:0}
+.cf-who b{font-size:16px;color:var(--text)}
+.cf-who small{font-size:11px;font-weight:700;color:var(--gold)}
+.cf-box p{font-size:13.5px;line-height:1.7;color:var(--muted);margin:0 0 20px}
+.cf-box p b{color:var(--red)}
+.cf-btns{display:flex;gap:10px}
+.cf-btns button{flex:1;margin:0;padding:14px 10px;font-size:14px;border-radius:16px}
+.cf-no{background:transparent!important;color:var(--text)!important;border:1px solid var(--border)!important;box-shadow:none!important}
+.cf-yes{background:linear-gradient(135deg,#ec5b6e,#c92f46)!important;color:#fff!important;box-shadow:0 10px 22px rgba(224,71,91,.4)!important}
 /* ===== PREMIUM MOTION (ভেতরের অ্যানিমেশন) ===== */
 @keyframes fadeUp{from{opacity:0;transform:translateY(16px)}to{opacity:1;transform:none}}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -866,7 +903,7 @@ body #loginBox{position:fixed;inset:0;margin:0;border-radius:0;padding:24px 24px
 .tab-in #pxBox>*:nth-child(2){animation-delay:.08s}.tab-in #pxBox>*:nth-child(3){animation-delay:.16s}.tab-in #pxBox>*:nth-child(4){animation-delay:.24s}
 .tab-in #pxBox>*:nth-child(n+5){animation-delay:.32s}
 .px-hero{background-size:220% 220%;animation:heroShift 14s ease infinite}
-.progress>div,.px-top .nm .pg i{transform-origin:left;animation:growX .9s cubic-bezier(.2,.8,.2,1) both .15s}
+.progress>div,.px-top .nm .pgb i{transform-origin:left;animation:growX .9s cubic-bezier(.2,.8,.2,1) both .15s}
 #chart div[style*="linear-gradient(180deg"]{transform-origin:bottom;animation:growY .8s cubic-bezier(.2,.8,.2,1) both .1s}
 .px-ev,.px-top{animation:fadeUp .45s ease both}
 .px-ev:nth-child(2),.px-top:nth-child(2){animation-delay:.07s}.px-ev:nth-child(3),.px-top:nth-child(3){animation-delay:.14s}
@@ -883,6 +920,102 @@ body .toast.show{transform:translateX(-50%) translateY(0)}
 .rp-host{position:relative;overflow:hidden}
 .rip{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:ripple .6s ease-out;pointer-events:none}
 @media (prefers-reduced-motion:reduce){#app,.tab-in>*,.px-hero,.progress>div,.bnav .bn.fab,.bnav .bn.on svg,.modal .rc-stamp,.px-ev,.px-top,#chart div{animation:none!important}}
+
+/* ===== সুন্দর তারিখ ফন্ট ===== */
+.dt{font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-weight:600;letter-spacing:.3px;font-size:1.04em;white-space:nowrap}
+.px-ev small .dt{color:var(--gold);font-size:12px}
+.pf-row .t small .dt,.due-row .nm small .dt{color:var(--gold);font-size:12px}
+.pf-hero .ph .dt{color:#f1d98f}
+table td .dt{font-size:12.5px;color:var(--muted)}
+.rp-t .dt{font-size:11.5px;color:#475569}
+
+/* ===== রসিদ ফিক্স (PDF-এ লেখা ভাঙা, সই-লাইন, সিল) ===== */
+.receipt,.receipt *{letter-spacing:0 !important}
+.receipt .rc-sign{display:flex;flex-direction:column;justify-content:flex-end}
+.receipt .rc-sign .sg-n{display:block;min-height:18px;margin-top:14px;font-size:11.5px;font-weight:600;color:#14161f}
+.receipt .rc-sign div{margin-top:2px;padding-top:4px;border-top:1px solid #b9ab7c}
+.receipt .rc-stamp{top:108px;right:20px;bottom:auto;z-index:2;background:rgba(255,253,248,.55)}
+.receipt .rc-stamp.part{border-color:rgba(217,119,6,.55);color:rgba(194,100,5,.8)}
+
+/* ===== PREMIUM RECEIPT v2 ===== */
+.receipt{background:linear-gradient(180deg,#fffdf6,#fbf5e2);border:1.5px solid #c9a24a;border-radius:20px;box-shadow:0 18px 40px rgba(21,29,68,.28)}
+.receipt::before{content:"";position:absolute;top:6px;left:6px;right:6px;bottom:6px;border:1px solid rgba(201,162,74,.6);border-radius:14px;pointer-events:none;z-index:3}
+.receipt>*:not(.rc-wm):not(.rc-stamp){position:relative;z-index:1}
+.rc-wm{position:absolute !important;left:50%;top:52%;width:230px;height:230px;margin:-115px 0 0 -115px;opacity:.05;z-index:0;display:flex;align-items:center;justify-content:center;font-size:170px;pointer-events:none}
+.rc-wm img{width:100%;height:100%;object-fit:contain}
+.receipt .rc-head{padding:16px 18px 16px;background:linear-gradient(135deg,#0c1130,#1a2457 58%,#2f3f8f);border-bottom:0}
+.receipt .rc-head h4{font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-size:17px;font-weight:700}
+.receipt .rc-head p{color:#f1d98f;font-size:11px}
+.receipt .rc-logo{box-shadow:0 0 0 2px #e7c872,0 4px 10px rgba(0,0,0,.3)}
+.receipt .rc-meta{background:linear-gradient(90deg,#c9a24a,#e9cf86 50%,#c9a24a);color:#3a2d08;border-bottom:0;padding:7px 18px;font-weight:600}
+.receipt .rc-meta b{color:#0c1130}
+.receipt .rc-body{padding:16px 20px 4px}
+.receipt .rc-amount{background:#fffaf0;border:3px double #cfae5a;border-radius:16px;padding:10px 10px 8px}
+.receipt .rc-amount .lbl2{color:#8a6d1c;font-size:10.5px;font-weight:600}
+.receipt .rc-amount .big{font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-size:32px;font-weight:700;color:#0b6b4d}
+.receipt .rc-amount .words{color:#6b5a28;font-size:11px}
+.receipt .rc-grid{gap:10px 14px}
+.receipt .rc-grid>div{border-bottom:1px dotted #dcc98e;padding-bottom:6px}
+.receipt .rc-grid .k{color:#a08a45;font-size:10px;font-weight:600}
+.receipt .rc-grid .v{font-size:13px;font-weight:600;color:#14161f}
+.receipt .rc-sum{background:#faf3dc;border-left:4px solid #c9a24a;border-radius:6px 14px 14px 6px;padding:9px 12px}
+.receipt .rc-note{color:#6b5a28}
+.receipt .rc-foot{padding:6px 20px 8px}
+.receipt .rc-sign .sg-n{font-family:'Anek Bangla','Hind Siliguri',sans-serif}
+.receipt .rc-sign div{border-top:1px solid #c9a24a}
+.receipt .rc-stamp{top:112px;right:22px;background:rgba(255,253,246,.85);border:3px double rgba(5,150,105,.6);font-size:14px;padding:3px 10px;border-radius:10px}
+.receipt .rc-thanks{margin:0 20px;padding:7px 0 12px;border-top:1px dashed #d9c58a;color:#a08a45;font-size:10.5px;display:flex;flex-direction:column;gap:3px;align-items:center}
+.receipt .rc-ref{font-size:9.5px;color:#8a7a45;font-weight:600}
+.receipt .rc-bar{height:7px;background:linear-gradient(90deg,#9a7420,#e7c872 50%,#9a7420);margin-top:2px}
+
+.receipt .rc-thanks{gap:4px;text-align:center;line-height:1.55}
+.receipt .rc-tag{font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-size:12.5px;font-weight:700;color:#9a7420}
+.receipt .rc-msg{font-size:11px;color:#7a6a3a}
+
+/* ===== PREMIUM REPORT PDF ===== */
+.pg{background:#fffdf9}
+.pg,.pg *{letter-spacing:0 !important}
+.pg::before{content:"";position:absolute;top:14px;left:14px;right:14px;bottom:14px;border:1px solid rgba(201,162,74,.6);pointer-events:none;z-index:3}
+.pg-bar{height:12px;background:linear-gradient(90deg,#0c1130,#1f2a5c 38%,#c9a24a 78%,#e7c872)}
+.pg-wm{position:absolute;left:50%;top:50%;width:440px;height:440px;margin:-210px 0 0 -220px;opacity:.035;z-index:0;display:flex;align-items:center;justify-content:center;font-size:330px;pointer-events:none}
+.pg-wm img{width:100%;height:100%;object-fit:contain}
+.pg-body{position:relative;z-index:1;padding:26px 44px 0}
+.pg-foot{left:44px;right:44px;bottom:26px;border-top:1.5px solid #c9a24a;padding-top:7px;align-items:center;color:#7a6a3a;font-size:11px;z-index:1}
+.pg-foot .pg-tag{font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-weight:700;color:#9a7420;font-size:12px}
+.pg-foot .pg-no{background:#1f2a5c;color:#f1d98f;padding:2px 12px;border-radius:10px;font-weight:600;font-size:10.5px}
+.rp-top{display:flex;justify-content:space-between;align-items:center;font-size:11.5px;color:#7a6a3a;margin-bottom:2px}
+.rp-tl{display:flex;align-items:center;gap:8px}
+.rp-tl i{width:22px;height:22px;display:flex;align-items:center;justify-content:center;font-style:normal;font-size:16px}
+.rp-tl i img{width:100%;height:100%;object-fit:contain}
+.rp-tl b{color:#1f2a5c;font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-size:13px}
+.rp-sec{position:relative;border-bottom:0;padding-bottom:7px;margin:12px 0 10px}
+.rp-sec::after{content:"";position:absolute;left:0;right:0;bottom:0;height:2px;background:linear-gradient(90deg,#c9a24a,#e7c872 45%,rgba(201,162,74,.12))}
+.rp-sec b{font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-size:17px;color:#1f2a5c;display:flex;align-items:center}
+.rp-sec b::before{content:"";display:inline-block;width:9px;height:9px;background:#c9a24a;transform:rotate(45deg);margin-right:11px}
+.rp-sec span{color:#8a7a45;font-size:11px}
+.rp-t th{background:#1f2a5c;color:#f1d98f;height:29px;font-size:11.5px;border-bottom:2px solid #c9a24a}
+.rp-t td{background:transparent;border-bottom:1px solid #ece2c2;color:#14161f}
+.rp-t tbody tr:nth-child(even) td{background:rgba(201,162,74,.09)}
+.rp-t tr.tot td{background:#f3e4ae !important;color:#2c2206;border-top:2px solid #c9a24a;font-weight:700}
+.rp-t .z{color:#d6ccab}
+.rp-hero{position:relative;overflow:hidden;padding:20px 26px;border-radius:18px;border:2px solid #c9a24a;background:linear-gradient(135deg,#0c1130,#1a2457 55%,#2f3f8f);box-shadow:0 8px 22px rgba(12,17,48,.25)}
+.rp-hero::after{content:"";position:absolute;right:-60px;top:-80px;width:260px;height:260px;border-radius:50%;background:radial-gradient(circle,rgba(241,217,143,.4),transparent 70%)}
+.rp-hero>*{position:relative;z-index:1}
+.rp-logo{width:68px;height:68px;border-radius:20px;background:#fff;box-shadow:0 0 0 3px #e7c872;font-size:34px}
+.rp-ht h1{font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-size:31px;font-weight:700}
+.rp-ht p{color:#f1d98f;font-size:14px;opacity:1}
+.rp-hm{color:#e9e3c8}
+.rp-hm b{color:#f1d98f}
+.rp-kpis{gap:12px;margin-top:16px}
+.rp-k{--kc:#1f2a5c;background:#fff;color:#14161f;border:1px solid #e6d9b5;border-top:4px solid var(--kc);border-radius:12px;padding:9px 12px;box-shadow:0 3px 10px rgba(31,42,92,.08)}
+.rp-k small{color:#7a6a3a;font-size:11px;opacity:1}
+.rp-k b{color:var(--kc);font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-size:20px}
+.rp-k.k2{--kc:#0f9d74;background:#fff}.rp-k.k3{--kc:#d9364d;background:#fff}.rp-k.k4{--kc:#0e7490;background:#fff}.rp-k.k5{--kc:#b8860b;background:#fff}.rp-k.k6{--kc:#7b3fb8;background:#fff}
+.rp-chip{background:#fffaf0;border-color:#d8bf7a}
+.rp-sigs{position:absolute;left:70px;right:70px;bottom:62px;display:flex;gap:60px;z-index:1}
+.rp-sg{flex:1;text-align:center;font-size:11.5px;color:#7a6a3a}
+.rp-sg span{display:block;min-height:20px;font-family:'Anek Bangla','Hind Siliguri',sans-serif;font-weight:600;font-size:13px;color:#14161f}
+.rp-sg div{border-top:1px solid #c9a24a;padding-top:4px;margin-top:2px}
 </style>
 </head>
 <body>
@@ -1402,9 +1535,28 @@ const bengaliMonths = ['জানুয়ারি','ফেব্রুয়�
 
 // ===== ইউটিলিটি =====
 function toast(msg) {
-  const t = document.getElementById('toast');
-  t.textContent = msg; t.classList.add('show');
-  setTimeout(() => t.classList.remove('show'), 2200);
+  let box = document.getElementById('toastBox');
+  if (!box) { box = document.createElement('div'); box.id = 'toastBox'; document.body.appendChild(box); }
+  let text = String(msg == null ? '' : msg).trim(), type = 'info', ic = '🔔';
+  const m = text.match(/^(✅|❌|⚠️|⏳|🗑️|🔒|👁️|📍|📋|📷|📥|📤|📊|🛟|🎉|ℹ️)\s*/u);
+  if (m) {
+    ic = m[1]; text = text.slice(m[0].length);
+    if (ic === '✅' || ic === '🎉') type = 'ok';
+    else if (ic === '❌' || ic === '🗑️') type = 'err';
+    else if (ic === '⚠️' || ic === '🔒' || ic === '⏳' || ic === '👁️') type = 'warn';
+  } else if (/ভুল|সমস্যা|যায়নি|হয়নি|নেই|দিন$/.test(text)) { type = 'warn'; ic = '⚠️'; }
+  const ttl = { ok: '✅ সফল', err: '❌ ব্যর্থ', warn: '⚠️ লক্ষ্য করুন', info: '' }[type];
+  const title = { ok: 'সফল হয়েছে', err: ic === '🗑️' ? 'ডিলিট হয়েছে' : 'সমস্যা হয়েছে', warn: 'মনোযোগ দিন', info: 'বিজ্ঞপ্তি' }[type];
+  while (box.children.length >= 3) box.firstChild.remove();
+  const el = document.createElement('div');
+  el.className = 'tst ' + type;
+  const dur = type === 'ok' ? 2600 : 3600;
+  el.style.setProperty('--dur', dur + 'ms');
+  el.innerHTML = `<div class="tst-ic">${ic}</div><div class="tst-tx"><b>${title}</b><span>${esc(text)}</span></div><i class="tst-bar"></i>`;
+  const close = () => { if (!el.parentNode) return; el.classList.add('out'); setTimeout(() => el.remove(), 260); };
+  el.onclick = close;
+  box.appendChild(el);
+  setTimeout(close, dur);
 }
 function getWeekNo(d) {
   const day0 = new Date(d.getFullYear(), d.getMonth(), d.getDate());
@@ -1416,6 +1568,10 @@ function getWeekNo(d) {
 const bnDigits = '০১২৩৪৫৬৭৮৯';
 const bnDays = ['রবিবার','সোমবার','মঙ্গলবার','বুধবার','বৃহস্পতিবার','শুক্রবার','শনিবার'];
 function bn(n) { return String(n).replace(/\d/g, d => bnDigits[d]); }
+function fmtDate(v) {
+  const m = /^(\d{4})-(\d{2})-(\d{2})/.exec(String(v || ''));
+  return m ? '<span class="dt">' + bn(+m[3]) + ' ' + bengaliMonths[+m[2] - 1] + ' ' + bn(m[1]) + '</span>' : (v ? '<span class="dt">' + bn(v) + '</span>' : '');
+}
 function fmtDay(d) { return bn(d.getDate()) + ' ' + bengaliMonths[d.getMonth()]; }
 function weekRangeText(w, y) {
   const j = new Date(y, 0, 1);
@@ -1597,9 +1753,9 @@ function renderPremium(){
     var by={};P.forEach(function(p){by[p.memberId]=(by[p.memberId]||0)+(+p.amount||0);});
     var top=Object.keys(by).map(function(k){return {m:mm[k],v:by[k]};}).filter(function(x){return x.m;}).sort(function(a,b){return b.v-a.v;}).slice(0,3);
     var md=['🥇','🥈','🥉'],tm=top.length?top[0].v:1;
-    var topH=top.length?top.map(function(x,i){return '<div class="px-top"><span class="md">'+md[i]+'</span><div class="nm">'+esc(x.m.name)+'<div class="pg"><i style="width:'+Math.round(x.v/tm*100)+'%"></i></div></div><span class="am">'+money(x.v)+'</span></div>';}).join(''):'<div class="muted">ডাটা নেই</div>';
+    var topH=top.length?top.map(function(x,i){return '<div class="px-top"><span class="md">'+md[i]+'</span><div class="nm">'+esc(x.m.name)+'<div class="pgb"><i style="width:'+Math.round(x.v/tm*100)+'%"></i></div></div><span class="am">'+money(x.v)+'</span></div>';}).join(''):'<div class="muted">ডাটা নেই</div>';
     var ev=P.map(function(p){return {d:p.date||'',t:'in',n:(mm[p.memberId]||{}).name||'সদস্য',s:'চাঁদা জমা',a:+p.amount||0};}).concat(E.map(function(e){return {d:e.date||'',t:'out',n:e.text||'খরচ',s:e.cat||'খরচ',a:+e.amount||0};})).sort(function(a,b){return String(b.d).localeCompare(String(a.d));}).slice(0,5);
-    var evH=ev.length?'<div class="px-tl">'+ev.map(function(x){return '<div class="px-ev '+x.t+'"><span class="a">'+(x.t==='in'?'+':'−')+money(x.a)+'</span><b>'+esc(x.n)+'</b><small>'+esc(x.s)+' · '+bn(x.d)+'</small></div>';}).join('')+'</div>':'<div class="muted">এখনো কোনো লেনদেন নেই</div>';
+    var evH=ev.length?'<div class="px-tl">'+ev.map(function(x){return '<div class="px-ev '+x.t+'"><span class="a">'+(x.t==='in'?'+':'−')+money(x.a)+'</span><b>'+esc(x.n)+'</b><small>'+esc(x.s)+' · '+fmtDate(x.d)+'</small></div>';}).join('')+'</div>':'<div class="muted">এখনো কোনো লেনদেন নেই</div>';
     box.innerHTML='<div class="px-hero"><div class="gr">'+g+' 👋</div><div class="lb">বর্তমান ব্যালেন্স</div><div class="big">'+(bal<0?'-':'')+money(Math.abs(bal))+'</div><div class="px-split"><span>▲ মোট আদায়<b>'+money(tin)+'</b></span><span>▼ মোট খরচ<b>'+money(tout)+'</b></span></div></div>'
     +'<div class="card"><h2>🏆 সেরা ৩ দাতা (সব সময়)</h2>'+topH+'</div>'
     +'<div class="card"><h2>🕒 সাম্প্রতিক লেনদেন</h2>'+evH+'</div>';
@@ -1717,11 +1873,11 @@ function showProfile(id){
   var pays=DB.payments.filter(function(p){return p.memberId===id;}).sort(function(a,b){return String(b.date).localeCompare(String(a.date));});
   var total=pays.reduce(function(s,p){return s+p.amount;},0),wk=wkOf(m),docs=docsAll()[id]||[];
   var roles=allRoles().map(function(r){return '<option value="'+esc(r)+'"'+(r===(m.role||MEMBER_ROLE)?' selected':'')+'>'+esc(r)+'</option>';}).join('');
-  var payH=pays.length?pays.map(function(p){return '<div class="pf-row"><div class="t">সপ্তাহ '+bn(p.weekNo)+', '+bn(p.year)+'<small>'+bn(p.date)+(p.note?' · '+esc(p.note):'')+'</small></div><b>'+money(p.amount)+'</b><button class="pf-ib" onclick="showReceipt(\''+p.id+'\')">🧾</button><button class="pf-ib" onclick="pfEditPay(\''+p.id+'\')">✏️</button><button class="pf-ib" onclick="pfDelPay(\''+p.id+'\')">🗑️</button></div>';}).join(''):'<div class="muted">কোনো লেনদেন নেই</div>';
-  var docH=docs.length?docs.map(function(d){var th=(d.m||'').indexOf('image/')===0?'<div class="pf-th" style="background-image:url('+d.d+')"></div>':'<div class="pf-th">📄</div>';return '<div class="pf-row">'+th+'<div class="t"><b style="color:var(--text)">'+esc(d.t)+'</b><small>'+esc(d.n)+' · '+bn(d.dt)+' · '+bn(Math.max(1,Math.round(d.s/1024)))+' KB</small></div><button class="pf-ib" onclick="pfViewDoc(\''+d.id+'\')">👁️</button><button class="pf-ib" onclick="pfDlDoc(\''+d.id+'\')">⬇️</button><button class="pf-ib" onclick="pfDelDoc(\''+d.id+'\')">🗑️</button></div>';}).join(''):'<div class="muted">কোনো ডকুমেন্ট নেই</div>';
+  var payH=pays.length?pays.map(function(p){return '<div class="pf-row"><div class="t">সপ্তাহ '+bn(p.weekNo)+', '+bn(p.year)+'<small>'+fmtDate(p.date)+(p.note?' · '+esc(p.note):'')+'</small></div><b>'+money(p.amount)+'</b><button class="pf-ib" onclick="showReceipt(\''+p.id+'\')">🧾</button><button class="pf-ib" onclick="pfEditPay(\''+p.id+'\')">✏️</button><button class="pf-ib" onclick="pfDelPay(\''+p.id+'\')">🗑️</button></div>';}).join(''):'<div class="muted">কোনো লেনদেন নেই</div>';
+  var docH=docs.length?docs.map(function(d){var th=(d.m||'').indexOf('image/')===0?'<div class="pf-th" style="background-image:url('+d.d+')"></div>':'<div class="pf-th">📄</div>';return '<div class="pf-row">'+th+'<div class="t"><b style="color:var(--text)">'+esc(d.t)+'</b><small>'+esc(d.n)+' · '+fmtDate(d.dt)+' · '+bn(Math.max(1,Math.round(d.s/1024)))+' KB</small></div><button class="pf-ib" onclick="pfViewDoc(\''+d.id+'\')">👁️</button><button class="pf-ib" onclick="pfDlDoc(\''+d.id+'\')">⬇️</button><button class="pf-ib" onclick="pfDelDoc(\''+d.id+'\')">🗑️</button></div>';}).join(''):'<div class="muted">কোনো ডকুমেন্ট নেই</div>';
   host.className='pf-host show';
   host.innerHTML='<div class="pf-wrap"><div class="pf-top"><button class="pf-x" onclick="closePf()">‹ ফিরুন</button><span>সদস্য প্রোফাইল</span><span style="width:70px"></span></div>'
-  +'<div class="pf-hero">'+avatarHTML(m,88)+'<h3>'+esc(m.name)+'</h3>'+roleBadge(m.role||MEMBER_ROLE)+'<div class="ph">📞 '+esc(m.phone||'ফোন নেই')+(m.address?' · 📍 '+esc(m.address):'')+'</div><div class="ph">📅 যোগদান: '+(m.join?bn(m.join):'—')+'</div>'+(m.phone?'<div class="pf-ct"><button onclick="pfCall()">📞 কল</button><button onclick="pfWA()">💬 WhatsApp</button></div>':'')+'</div>'
+  +'<div class="pf-hero">'+avatarHTML(m,88)+'<h3>'+esc(m.name)+'</h3>'+roleBadge(m.role||MEMBER_ROLE)+'<div class="ph">📞 '+esc(m.phone||'ফোন নেই')+(m.address?' · 📍 '+esc(m.address):'')+'</div><div class="ph">📅 যোগদান: '+(m.join?fmtDate(m.join):'—')+'</div>'+(m.phone?'<div class="pf-ct"><button onclick="pfCall()">📞 কল</button><button onclick="pfWA()">💬 WhatsApp</button></div>':'')+'</div>'
   +'<div class="pf-st"><div>মোট জমা<b>'+money(total)+'</b></div><div>এ বছরের বাকি<b>'+money(ytdDue(m))+'</b></div><div class="sp">সাপ্তাহিক চাঁদা<b>'+(wk===0?'ছাড়':money(wk))+'</b>'+(pfHas(m)?'বিশেষ':'ডিফল্ট')+'</div></div>'
   +'<div class="card"><h2>✏️ তথ্য ও চাঁদা সম্পাদনা</h2><label class="pf-lbl">নাম</label><input id="pfName" value="'+esc(m.name)+'">'
   +'<div class="row"><div><label class="pf-lbl">ফোন</label><input id="pfPhone" value="'+esc(m.phone||'')+'"></div><div><label class="pf-lbl">যোগদান</label><input type="date" id="pfJoin" value="'+esc(m.join||'')+'"></div></div>'
@@ -1789,7 +1945,6 @@ function pfDelDoc(did){if(!confirm('ডকুমেন্টটি মুছব�
 (function(){
   var _st=switchTab;switchTab=function(n,e){_st(n,e);if(n==='profiles')renderProfiles();};
   var _ra=renderAll;renderAll=function(){_ra();renderProfiles();};
-  var _dm=deleteMember;deleteMember=function(id){var n=DB.members.length;_dm(id);if(DB.members.length<n){var o=docsAll();delete o[id];docsSave(o);if(PF_ID===id)closePf();}};
   var _lg=login;login=function(){_lg();return;var b=document.getElementById('loginBox');if(b&&!b.classList.contains('hidden')){b.classList.remove('shake');void b.offsetWidth;b.classList.add('shake');}};
   var _ab=applyBranding;applyBranding=function(){_ab();var e=document.getElementById('lgName');if(e)e.textContent=DB.settings.name;};
 })();
@@ -1839,10 +1994,44 @@ function addMember() {
   renderAll();
 }
 
-function deleteMember(id) {
-  if (!confirm('সদস্য ও তার সব লেনদেন ডিলিট করবেন?')) return;
-  DB.members = DB.members.filter(m => m.id !== id);
+// ===== প্রিমিয়াম কনফার্ম ডায়ালগ =====
+function pxConfirm(o) {
+  return new Promise(res => {
+    const old = document.getElementById('pxCf'); if (old) old.remove();
+    const el = document.createElement('div');
+    el.id = 'pxCf'; el.className = 'cf-bg';
+    el.innerHTML = `<div class="cf-box" role="dialog" aria-modal="true">
+      <div class="cf-ic">${o.icon || '🗑️'}</div>
+      <h3>${o.title || 'নিশ্চিত করুন'}</h3>
+      <div class="cf-who">${o.who || ''}</div>
+      <p>${o.msg || ''}</p>
+      <div class="cf-btns">
+        <button class="cf-no" type="button">বাতিল</button>
+        <button class="cf-yes" type="button">${o.ok || 'হ্যাঁ, ডিলিট করুন'}</button>
+      </div></div>`;
+    const done = v => { el.classList.add('out'); setTimeout(() => el.remove(), 180); res(v); };
+    el.querySelector('.cf-no').onclick = () => done(false);
+    el.querySelector('.cf-yes').onclick = () => done(true);
+    el.addEventListener('click', e => { if (e.target === el) done(false); });
+    document.body.appendChild(el);
+  });
+}
+async function deleteMember(id) {
+  const m = DB.members.find(x => x.id === id);
+  if (!m) return;
+  const cnt = DB.payments.filter(p => p.memberId === id).length;
+  const ok = await pxConfirm({
+    icon: '🗑️',
+    title: 'সদস্য ডিলিট করবেন?',
+    who: `<div class="cf-av">${avatarHTML(m, 54)}</div><b>${esc(m.name)}</b>${m.role && m.role !== MEMBER_ROLE ? '<small>' + esc(m.role) + '</small>' : ''}`,
+    msg: `এই সদস্য, তাঁর ${bn(cnt)}টি লেনদেন ও সব ডকুমেন্ট <b>স্থায়ীভাবে মুছে যাবে।</b> এটি আর ফেরানো যাবে না।`,
+    ok: 'হ্যাঁ, ডিলিট করুন'
+  });
+  if (!ok) return;
+  DB.members = DB.members.filter(x => x.id !== id);
   DB.payments = DB.payments.filter(p => p.memberId !== id);
+  const o = docsAll(); delete o[id]; docsSave(o);
+  if (PF_ID === id) closePf();
   toast('🗑️ ডিলিট হয়েছে');
   renderAll();
 }
@@ -1885,7 +2074,6 @@ function renderMembers() {
         </div>
       </div>
       <span class="amt">৳${paid}</span>
-      <button class="del" onclick="deleteMember('${m.id}')">✕</button>
     </div>`;
   }).join('');
 }
@@ -2047,7 +2235,7 @@ function renderPayments() {
         <td>${m ? esc(m.name) : '—'}${p.note ? `<br><span class="muted">${esc(p.note)}</span>` : ''}</td>
         <td>${p.weekNo}/${p.year}</td>
         <td class="paid">৳${p.amount}</td>
-        <td>${esc(p.date)}</td>
+        <td>${fmtDate(p.date)}</td>
         <td style="white-space:nowrap"><button class="del" title="রসিদ" onclick="showReceipt('${p.id}')">🧾</button><button class="del" onclick="deletePayment('${p.id}')">✕</button></td>
       </tr>`;
     }).join('') + '</tbody></table>';
@@ -2295,7 +2483,7 @@ function ensureRcpt(id) {
   }
   return p;
 }
-function rcptLabel(n) { return 'RC-' + bn(String(n).padStart(4, '0')); }
+function rcptLabel(n) { return 'RC-' + String(n).padStart(4, '0'); }
 
 function receiptHTML(id) {
   const p = ensureRcpt(id);
@@ -2311,7 +2499,9 @@ function receiptHTML(id) {
   const cashier = findRole('কোষাধ্যক্ষ', 'ক্যাশিয়ার');
   const pres = findRole('সভাপতি');
   const sec = findRole('সেক্রেটারি');
+  const wmLogo = s.logo && String(s.logo).startsWith('data:image/') ? `<img src="${s.logo}" alt="">` : '🏘️';
   return `<div class="receipt">
+    <div class="rc-wm">${wmLogo}</div>
     <div class="rc-head">
       <div class="rc-logo" style="overflow:hidden">${s.logo && String(s.logo).startsWith('data:image/') ? `<img src="${s.logo}" alt="" style="width:100%;height:100%;object-fit:contain">` : '🏘️'}</div>
       <h4>${esc(s.name)}</h4>
@@ -2330,7 +2520,7 @@ function receiptHTML(id) {
       <div class="rc-grid">
         <div><div class="k">সদস্যের নাম</div><div class="v" style="display:flex;align-items:center;gap:8px">${m.photo && String(m.photo).startsWith('data:image/') ? `<img class="rc-ph" src="${m.photo}" alt="">` : ''}<span>${esc(m.name)}</span></div></div>
         <div><div class="k">পদবি</div><div class="v">${esc(m.role || 'সদস্য')}</div></div>
-        <div><div class="k">ফোন</div><div class="v">${esc(m.phone || '—')}</div></div>
+        <div><div class="k">ফোন</div><div class="v">${m.phone ? bn(esc(m.phone)) : '—'}</div></div>
         <div><div class="k">সপ্তাহ</div><div class="v">${bn(p.weekNo)} (${weekRangeText(p.weekNo, p.year)}, ${bn(p.year)})</div></div>
         ${m.address ? `<div style="grid-column:1/-1"><div class="k">ঠিকানা</div><div class="v">${esc(m.address)}</div></div>` : ''}
       </div>
@@ -2341,13 +2531,14 @@ function receiptHTML(id) {
       </div>
       ${p.note ? `<div class="rc-note">📝 নোট: ${esc(p.note)}</div>` : ''}
     </div>
-    <div class="rc-stamp">পরিশোধিত</div>
+    <div class="rc-stamp ${ok ? '' : 'part'}">${ok ? 'পরিশোধিত' : 'আংশিক'}</div>
     <div class="rc-foot">
-      <div class="rc-sign"><div>${cashier ? `<b>${esc(cashier.name)}</b>` : ''}${esc(cashier ? cashier.role : 'কোষাধ্যক্ষ')}</div></div>
-      <div class="rc-sign"><div>${sec ? `<b>${esc(sec.name)}</b>` : ''}সেক্রেটারি</div></div>
-      <div class="rc-sign"><div>${pres ? `<b>${esc(pres.name)}</b>` : ''}সভাপতি</div></div>
+      <div class="rc-sign"><span class="sg-n">${cashier ? esc(cashier.name) : ''}</span><div>${esc(cashier ? cashier.role : 'কোষাধ্যক্ষ')}</div></div>
+      <div class="rc-sign"><span class="sg-n">${sec ? esc(sec.name) : ''}</span><div>সেক্রেটারি</div></div>
+      <div class="rc-sign"><span class="sg-n">${pres ? esc(pres.name) : ''}</span><div>সভাপতি</div></div>
     </div>
-    <div class="rc-thanks">ধন্যবাদ! এটি কম্পিউটার-জেনারেটেড রসিদ।</div>
+    <div class="rc-thanks"><span class="rc-tag">একতা · উন্নয়ন · সমৃদ্ধি</span><span class="rc-msg">আপনার প্রতিটি চাঁদা ${esc(s.name)}-এর শক্তি।<br>পাশে থাকার জন্য আন্তরিক ধন্যবাদ।</span></div>
+    <div class="rc-bar"></div>
   </div>`;
 }
 
@@ -2399,7 +2590,8 @@ async function downloadReceipt(id) {
     document.body.appendChild(holder);
     const el = holder.firstElementChild;
     const pageW = 148, margin = 6;
-    const pageH = Math.ceil(el.offsetHeight * (pageW - margin * 2) / 420) + margin * 2 + 2;
+    await new Promise(r => setTimeout(r, 300));
+    const pageH = Math.ceil(el.getBoundingClientRect().height * (pageW - margin * 2) / 420) + margin * 2 + 1;
     await html2pdf().set({
       margin,
       filename: 'rasid-RC-' + String(p.rcpt).padStart(4, '0') + '.pdf',
@@ -2554,7 +2746,7 @@ function renderExpenses() {
   list.innerHTML = [...ex].sort((a, b) => b.date.localeCompare(a.date)).map(e => `
     <div class="due-row">
       <div class="nm"><strong>${esc(e.text)}</strong>
-        <small><span class="chip">${esc(e.cat)}</span>${esc(e.date)}</small></div>
+        <small><span class="chip">${esc(e.cat)}</span>${fmtDate(e.date)}</small></div>
       <span class="amt-due">৳${bn(e.amount)}</span>
       <button class="del" onclick="deleteExpense('${e.id}')">✕</button>
     </div>`).join('');
@@ -2900,8 +3092,8 @@ function buildReportPages(y) {
         <div class="rp-k k5"><small>বর্তমান ব্যালেন্স (সব সময়)</small><b>${D.allBal < 0 ? '-' : ''}${money(Math.abs(D.allBal))}</b></div>
         <div class="rp-k k6"><small>${bn(D.y)} সালের মোট বাকি</small><b>${money(D.dueTotal)}</b></div>
       </div>
-      <div class="rp-sec"><b>👑 কমিটি</b></div><div class="rp-chips">${chips}</div>
-      <div class="rp-sec"><b>📆 মাসভিত্তিক সারসংক্ষেপ</b><span>তারিখ অনুযায়ী মাস ধরা হয়েছে</span></div>
+      <div class="rp-sec"><b>কমিটি</b></div><div class="rp-chips">${chips}</div>
+      <div class="rp-sec"><b>মাসভিত্তিক সারসংক্ষেপ</b><span>তারিখ অনুযায়ী মাস ধরা হয়েছে</span></div>
       ${rpTable(mcols, mrows, 'sm')}`
   });
 
@@ -2935,7 +3127,7 @@ function buildReportPages(y) {
     const cat = {}; D.exps.forEach(e => cat[e.cat] = (cat[e.cat] || 0) + e.amount);
     const sub = 'খাতভিত্তিক: ' + Object.entries(cat).map(([k, v]) => `${esc(k)} ${money(v)}`).join(' · ');
     const rowsE = [...D.exps].sort((a, b) => a.date.localeCompare(b.date))
-      .map(e => [bn(e.date), esc(e.text), esc(e.cat), `<b>${money(e.amount)}</b>`]);
+      .map(e => [fmtDate(e.date), esc(e.text), esc(e.cat), `<b>${money(e.amount)}</b>`]);
     pages.push(...rpTwoCol(`💸 খরচের বিস্তারিত — ${bn(D.y)} (মোট ${money(D.totalOut)})`, sub,
       [{ h: 'তারিখ', w: 19 }, { h: 'বিবরণ', w: 41 }, { h: 'খাত', w: 18 }, { h: 'টাকা', w: 22, a: 'r' }], rowsE, 24));
   }
@@ -2944,18 +3136,22 @@ function buildReportPages(y) {
   if (D.pays.length) {
     const mem = {}; DB.members.forEach(m => mem[m.id] = m);
     const rowsP = [...D.pays].sort((a, b) => a.date.localeCompare(b.date) || (a.rcpt || 0) - (b.rcpt || 0)).map(p => [
-      bn(p.date), p.rcpt ? rcptLabel(p.rcpt) : '—', mem[p.memberId] ? esc(mem[p.memberId].name) : '—',
+      fmtDate(p.date), p.rcpt ? rcptLabel(p.rcpt) : '—', mem[p.memberId] ? esc(mem[p.memberId].name) : '—',
       bn(p.weekNo), `<b>${money(p.amount)}</b>`, esc(p.note || '')]);
     pages.push(...rpTwoCol(`🧾 সব লেনদেনের তালিকা — ${bn(D.y)} (${bn(D.pays.length)} টি, মোট ${money(D.totalIn)})`, 'তারিখ অনুযায়ী',
       [{ h: 'তারিখ', w: 17 }, { h: 'রসিদ', w: 14 }, { h: 'সদস্য', w: 24 }, { h: 'সপ্তাহ', w: 9, a: 'c' }, { h: 'টাকা', w: 12, a: 'r' }, { h: 'নোট', w: 24 }], rowsP, 24));
   }
 
   const total = pages.length;
+  const miniLogo = s.logo && String(s.logo).startsWith('data:image/') ? `<img src="${s.logo}" alt="">` : '🏘️';
+  const sg = (r, f) => { const m = findRole(...r); return `<div class="rp-sg"><span>${m ? esc(m.name) : ''}</span><div>${f}</div></div>`; };
+  const sigs = `<div class="rp-sigs">${sg(['কোষাধ্যক্ষ', 'ক্যাশিয়ার'], 'কোষাধ্যক্ষ')}${sg(['সেক্রেটারি'], 'সেক্রেটারি')}${sg(['সভাপতি'], 'সভাপতি')}</div>`;
   return pages.map((pg, i) => {
+    const title = String(pg.title || '').replace(/^[^\p{L}\p{N}]+/u, '');
     const head = pg.cover ? '' :
-      `<div class="rp-top">${org} · ফুল রিপোর্ট ${bn(D.y)}</div><div class="rp-sec"><b>${pg.title}</b><span>${pg.sub || ''}</span></div>`;
-    return `<div class="pg"><div class="pg-bar"></div><div class="pg-body">${head}${pg.body}</div>
-      <div class="pg-foot"><span>${org} · কম্পিউটার-জেনারেটেড রিপোর্ট</span><span>পাতা ${bn(i + 1)} / ${bn(total)}</span></div></div>`;
+      `<div class="rp-top"><span class="rp-tl"><i>${miniLogo}</i><b>${org}</b></span><span>আর্থিক রিপোর্ট · ${bn(D.y)}</span></div><div class="rp-sec"><b>${title}</b><span>${pg.sub || ''}</span></div>`;
+    return `<div class="pg"><div class="pg-bar"></div><div class="pg-wm">${miniLogo}</div><div class="pg-body">${head}${pg.body}</div>${pg.cover ? sigs : ''}
+      <div class="pg-foot"><span>${org}</span><span class="pg-tag">একতা · উন্নয়ন · সমৃদ্ধি</span><span class="pg-no">পাতা ${bn(i + 1)} / ${bn(total)}</span></div></div>`;
   });
 }
 function openReport() {
